@@ -1,0 +1,40 @@
+{
+  "app": {
+    "title": "שבצק – פיילוט v8",
+    "default_sector_id": "gzera_1",
+    "remember_last_sector": true
+  },
+  "security": {
+    "lock_idle_minutes": 30
+  },
+  "sectors": [
+    {
+      "id": "gzera_1",
+      "name": "גזרה 1",
+      "description": "דוגמה – גזרה 1 (סיסמה נפרדת).",
+      "base_path": "./sectors/gzera_1",
+      "password_hash_sha256_hex": "e08c9da66e56de3eae684132e7026b47c08f77a2b6d2cbd3c5954aad25a0cc6d"
+    },
+    {
+      "id": "gzera_2",
+      "name": "גזרה 2",
+      "description": "דוגמה – גזרה 2 (סיסמה נפרדת).",
+      "base_path": "./sectors/gzera_2",
+      "password_hash_sha256_hex": "bad0a72aae58e23fff250301c715c1a1122402554394338c0406d81ae2dd972c"
+    },
+    {
+      "id": "gzera_3",
+      "name": "גזרה 3",
+      "description": "דוגמה – גזרה 3 (סיסמה נפרדת).",
+      "base_path": "./sectors/gzera_3",
+      "password_hash_sha256_hex": "ea42880eac00d8e01ccbb57a7eb72023a29c277411d730b827daad9bbcf4f8d7"
+    },
+    {
+      "id": "gzera_4",
+      "name": "גזרה 4",
+      "description": "דוגמה – גזרה 4 (סיסמה נפרדת).",
+      "base_path": "./sectors/gzera_4",
+      "password_hash_sha256_hex": "38aa2838397cc112864b10f8c5083c2882e87aadec0852d515c20315e02de937"
+    }
+  ]
+}

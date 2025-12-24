@@ -1,0 +1,2184 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>שבצק – פיילוט v16</title>
+  <style>
+    :root{
+      --bg:#0b1220; --card:#111b2e; --muted:#9fb0d0; --text:#ffffff;
+      --primary:#2f6bff; --danger:#ff4d4d; --ok:#2bd67b; --line:#223051; --warn:#ffb020;
+      --cell:#0f1930; --cell2:#0d162b;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; background:var(--bg); color:var(--text);}
+    .app{display:grid; grid-template-columns: 410px 1fr; gap:12px; padding:12px; min-height:100vh;}
+    @media (max-width: 1100px){ .app{grid-template-columns: 1fr;} }
+    .card{background:var(--card); border:1px solid var(--line); border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.35); padding:14px;}
+    h1{font-size:18px; margin:0 0 8px}
+    h2{font-size:14px; margin:0 0 8px; color:var(--muted)}
+    p{margin:8px 0; color:var(--muted); line-height:1.5}
+    label{display:block; font-size:12px; color:var(--muted); margin:10px 0 6px}
+    input, textarea, select{
+      width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--line);
+      background:#0f1930; color:var(--text); outline:none;
+    }
+    button{padding:10px 12px; border-radius:12px; border:0; cursor:pointer; font-weight:800}
+    .primary{background:var(--primary); color:#fff}
+    .ghost{background:#1a2742; color:#fff; border:1px solid var(--line)}
+    .danger{background:var(--danger); color:#fff}
+    .pill{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; border:1px solid var(--line); color:var(--muted); background:#0f1930; font-size:12px; margin:4px 6px 0 0;}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    .small{font-size:12px}
+    .ok{color:var(--ok)} .err{color:var(--danger)} .warn{color:var(--warn)}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .hr{height:1px; background:var(--line); margin:12px 0}
+    .loginWrap{max-width:980px; margin:0 auto; padding:18px;}
+    .hidden{display:none !important}
+
+    .gridWrap{overflow:auto; border-radius:16px; border:1px solid var(--line); background:#0f1930;}
+    table.grid{width:100%; border-collapse:separate; border-spacing:0; min-width:980px;}
+    .grid th,.grid td{border-left:1px solid var(--line); border-top:1px solid var(--line); padding:0; vertical-align:top;}
+    .grid th:first-child,.grid td:first-child{border-right:1px solid var(--line);}
+    .grid thead th{position:sticky; top:0; background:#0d162b; z-index:5; color:var(--muted); text-align:right; font-size:12px; padding:10px;}
+    .timeCol{position:sticky; right:0; background:#0d162b; z-index:4; width:88px; min-width:88px; max-width:88px; color:var(--muted); font-size:12px; padding:10px; text-align:center;}
+    .slotCell{background:var(--cell); padding:10px; min-height:44px;}
+    .slotCell.alt{background:var(--cell2);}
+    .slotCell.clickable{cursor:pointer;}
+    .slotMeta{display:flex; justify-content:space-between; gap:8px; align-items:flex-start}
+    .slotTitle{font-weight:800; font-size:13px; line-height:1.2}
+    .slotSub{font-size:11px; color:var(--muted); margin-top:4px}
+    .assignee{margin-top:6px; font-weight:900}
+    .badge{font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); background:#0b1220;}
+    .badge.manual{border-color:#2f6bff; color:#cfe0ff}
+    .badge.auto{border-color:#2bd67b; color:#d8ffe9}
+    .badge.warn{border-color:#ffb020; color:#ffe7b5}
+    .empty{color:#7f92b7}
+
+    /* Modal */
+    .modalBackdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; padding:14px; z-index:50}
+    .modal{width:min(980px, 96vw); max-height:90vh; overflow:auto}
+    table.mini{width:100%; border-collapse:collapse; font-size:12px}
+    table.mini th{color:var(--muted); text-align:right; padding:8px 6px; border-bottom:1px solid var(--line)}
+    table.mini td{padding:8px 6px; border-bottom:1px solid var(--line); vertical-align:top}
+    .btnSm{padding:6px 10px; border-radius:10px; font-weight:800}
+  
+    @media print{
+      body{background:#fff !important; color:#000 !important}
+      .app, #loginView, #appView, #soldierView{display:none !important}
+      #printView{display:block !important}
+      #printCard{border:0 !important; box-shadow:none !important; background:#fff !important; color:#000 !important}
+      .pill{border:1px solid #999 !important; color:#111 !important; background:#fff !important}
+      .slotCell{background:#fff !important; border:1px solid #ddd !important}
+      .badge{border:1px solid #999 !important; color:#111 !important; background:#fff !important}
+      .hr{background:#ddd !important}
+    }
+    .alertBar{border:1px solid var(--line); border-radius:14px; padding:10px 12px; margin-top:10px; display:flex; gap:10px; align-items:center; justify-content:space-between}
+    .alertBar.warn{border-color: var(--warn); background: rgba(255,176,32,.08)}
+    .pulse{animation:pulse 1.2s ease-in-out infinite}
+    @keyframes pulse{
+      0%{transform:scale(1)}
+      50%{transform:scale(1.01)}
+      100%{transform:scale(1)}
+    }
+
+  
+    .vacCell{cursor:pointer; user-select:none; text-align:center}
+    .vacActive{background:rgba(46,204,113,.12)}
+    .vacLeave{background:rgba(255,99,71,.14)}
+    .stickyRight{position:sticky; right:0; background:var(--panel); z-index:3}
+    .stickyRight2{position:sticky; right:180px; background:var(--panel); z-index:3}
+    .stickyLeft{position:sticky; left:0; background:var(--panel); z-index:3}
+    .stickyLeft2{position:sticky; left:120px; background:var(--panel); z-index:3}
+
+  
+    .vacExit{background:rgba(52,152,219,.14)}
+    .vacReturn{background:rgba(155,89,182,.14)}
+    .vacLow{background:rgba(231,76,60,.20) !important}
+
+  </style>
+</head>
+<body>
+  <!-- LOGIN VIEW -->
+  <div id="loginView" class="loginWrap">
+    <div class="card">
+      <h1 id="loginTitle">שבצק – כניסה</h1>
+      <p class="small">v8: ✅ CSV parser משופר (תמיכה במרכאות/פסיקים) + ✅ שיבוץ ידני דרך <b>חיפוש ובחירה</b> (בלי להקליד ID).</p>
+
+      <label>בחר גזרה</label>
+      <select id="sectorSelect"></select>
+      <p id="sectorDesc" class="small"></p>
+
+      
+      <label>תפקיד</label>
+      <div class="row" style="gap:12px">
+        <label class="pill" style="cursor:pointer"><input type="radio" name="role" value="admin" checked style="accent-color:var(--primary)"> מפקד / מנהל</label>
+        <label class="pill" style="cursor:pointer"><input type="radio" name="role" value="soldier" style="accent-color:var(--primary)"> חייל (תצוגה בלבד)</label>
+      </div>
+
+      <div id="soldierPickBox" class="hidden">
+        <label>בחר את שמך</label>
+        <input id="soldierSearchLogin" placeholder="חפש לפי שם / ID / מחלקה / צוות..." />
+        <select id="soldierSelectLogin" size="8" style="height:180px; margin-top:8px"></select>
+        <p class="small">אין סיסמה לחייל. לאחר בחירה—לחץ “כניסה”.</p>
+      </div>
+<label>סיסמה</label>
+      <input id="password" type="password" autocomplete="current-password" placeholder="הקלד סיסמה..." />
+
+      <div class="row" style="margin-top:10px">
+        <button id="loginBtn" class="primary">כניסה</button>
+        <button id="showHashBtn" class="ghost">חשב hash לסיסמה</button>
+      </div>
+      <label class="small">SHA-256 hex</label>
+      <textarea id="hashOut" rows="3" class="mono" readonly></textarea>
+      <p id="loginMsg" class="small"></p>
+
+      <div class="hr"></div>
+      <p class="small">קובץ דוגמה ל-CSV מצורף: <span class="mono">soldiers_template.csv</span>.</p>
+    </div>
+  </div>
+
+  <!-- APP VIEW -->
+  <div id="appView" class="app hidden">
+    <aside class="card">
+      <h1 id="appTitle">שבצק – פיילוט v16</h1>
+      <p id="appSub" class="small"></p>
+
+      <div class="hr"></div>
+
+      <h2>גזרה</h2>
+      <div class="row">
+        <select id="sectorSelectInApp" style="flex:1" disabled></select>
+        <button id="lockBtn" class="ghost">נעל</button>
+        <button id="logoutBtn" class="danger">יציאה</button>
+      </div>
+      <p id="sectorDescInApp" class="small"></p>
+
+      <div class="hr"></div>
+
+      <h2>חיילים (דינמי)</h2>
+      <div class="row">
+        <button id="manageSoldiersBtn" class="ghost" style="flex:1">נהל חיילים</button>
+        <button id="resetSoldiersBtn" class="danger" style="flex:1">איפוס חיילים לברירת מחדל</button>
+      </div>
+      <p class="small">רשימת החיילים נשמרת מקומית בדפדפן (לפי גזרה). ניתן לייבא CSV ולערוך.</p>
+
+      <div class="hr"></div>
+
+      <h2>בחירת תאריכים</h2>
+      <label>טווח (לסטטיסטיקה + בנייה אוטומטית)</label>
+      <div class="row">
+        <input id="fromDate" type="date" style="flex:1" />
+        <input id="toDate" type="date" style="flex:1" />
+      </div>
+
+      <label>יום תצוגה (היממה היא 06:00 עד 06:00)</label>
+      <input id="viewDate" type="date" />
+
+      <div class="row" style="margin-top:10px">
+        <button id="autoAllBtn" class="primary" style="flex:1">בנה אוטומטית</button>
+        <button id="exportBtn" class="ghost" style="flex:1" disabled>ייצא CSV (שיבוץ)</button>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <button id="manualToggleBtn" class="ghost" style="flex:1">מצב ידני: כבוי</button>
+        <button id="autoFillBtn" class="ghost" style="flex:1" disabled>השׁלם אוטומטית</button>
+      </div>
+
+      <button id="resetBtn" class="danger" style="margin-top:10px; width:100%">איפוס מהעכשיו (שיבוץ בגזרה)</button>
+      <p id="msg" class="small"></p>
+
+      <div class="hr"></div>
+      <h2>חלוקת שעות בפועל (לפי טווח)</h2>
+      <div id="statsBox" class="small"></div>
+
+      <div class="hr"></div>
+      <h2>תצוגת מפקד: מי עמוס / מי פנוי</h2>
+      <p class="small">המדד מפריד בין <b>עומס שעות</b> לבין <b>חוסר זמינות</b>. משימה יומית (24/7) מסמנת את החייל כ״לא זמין״ באותו יום, אבל שעות העומס נספרות לפי <span class="mono">day_hours_count</span> בלבד.</p>
+      
+      <div class="row" style="margin-top:10px">
+        <span class="pill">יעד יומי: <b>8.0</b> שעות (סבילות <span class="mono">7.5–8.5</span>)</span>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button id="showAllCmdBtn" class="primary" style="flex:1">הצג כולם</button>
+        <button id="showFreeCmdBtn" class="ghost" style="flex:1">רק פנויים</button>
+        <button id="showBusyCmdBtn" class="ghost" style="flex:1">רק עמוסים</button>
+      </div>
+
+      <div id="commanderBox" class="small"></div>
+
+      <div class="hr"></div>
+      <h2>כללים פעילים (גזרה)</h2>
+      <div id="rulesBox" class="small"></div>
+    </aside>
+
+    <main class="card">
+      <div>
+        <h2 style="margin:0">שבצק – טבלת משימות</h2>
+        <p class="small" style="margin-top:6px">עמודות = משימות · שורות = שעות · היממה: <span class="mono">06:00 → 06:00</span></p>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="gridWrap">
+        <table id="grid" class="grid">
+          <thead><tr id="gridHead"></tr></thead>
+          <tbody id="gridBody"></tbody>
+        </table>
+      </div>
+
+      <p class="small" style="margin-top:10px">
+        במצב ידני: לחץ על קוביה → נפתח חלון חיפוש ובחירת חייל. “השׁלם אוטומטית” ישלים בלי למחוק ידני.
+      </p>
+    </main>
+  </div>
+  <!-- SOLDIER VIEW -->
+  <div id="soldierView" class="app hidden">
+    <aside class="card">
+      <h1 id="soldierTitle">שבצק – חייל</h1>
+      <p id="soldierSub" class="small"></p>
+
+      <div class="hr"></div>
+
+      <h2>טווח תצוגה</h2>
+      <div class="row">
+        <button id="range7Btn" class="primary" style="flex:1">7 ימים קדימה</button>
+        <button id="range14Btn" class="ghost" style="flex:1">14 ימים קדימה</button>
+      </div>
+
+      <label>מתאריך</label>
+      <input id="soldierFrom" type="date" />
+      <label>עד תאריך</label>
+      <input id="soldierTo" type="date" />
+
+      <div class="row" style="margin-top:10px">
+        <button id="soldierRefreshBtn" class="ghost" style="flex:1">רענן</button>
+        <button id="soldierLogoutBtn" class="danger" style="flex:1">יציאה</button>
+      </div>
+
+      
+      <div class="hr"></div>
+      <div id="nextShiftAlert" class="alertBar hidden">
+        <div>
+          <div class="small" style="color:var(--muted)">יש לך משמרת קרובה</div>
+          <div style="font-weight:900" id="nextShiftAlertText">—</div>
+        </div>
+        <div class="row" style="gap:8px">
+          <div class="pill">המשמרת הבאה: <b id="nextShiftLabel">—</b></div>
+          <div class="pill">בעוד: <b id="nextShiftCountdown">—</b></div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <label class="pill"><input id="onlyAssignedChk" type="checkbox" checked> הצג רק ימים עם משימות</label>
+        <button id="exportMineBtn" class="ghost">ייצא CSV אישי</button>
+        <button id="printMineBtn" class="ghost">הדפס / PDF אישי</button>
+      </div>
+
+      <p class="small">תצוגה בלבד. אין אפשרות לשנות שיבוצים.</p>
+    </aside>
+
+    <main class="card">
+      <div>
+        <h2 style="margin:0">המשימות שלי</h2>
+        <p class="small" style="margin-top:6px">היממה: <span class="mono">06:00 → 06:00</span></p>
+      </div>
+
+      <div class="hr"></div>
+
+      <div id="soldierTimeline"></div>
+    </main>
+  </div>
+  <!-- PRINT VIEW (for Save as PDF) -->
+  <div id="printView" class="loginWrap hidden">
+    <div id="printCard" class="card">
+      <h1 style="margin:0">שבצק – תדפיס חייל</h1>
+      <p id="printMeta" class="small"></p>
+      <div class="hr"></div>
+      <div id="printTimeline"></div>
+      <div class="hr"></div>
+      <p class="small">הדפסה זו מיועדת ל״שמירה כ-PDF״ מתוך הדפדפן.</p>
+    </div>
+  </div>
+  <!-- MODAL: Daily Report -->
+  <div id="dailyReportModal" class="modal hidden">
+    <div class="modalCard">
+      <div class="row" style="justify-content:space-between; align-items:center">
+        <h2 style="margin:0">דוח אחד – חיילים פעילים ביום</h2>
+        <button id="dailyReportCloseBtn" class="ghost">סגור</button>
+      </div>
+      <p class="small">הדוח מציג את כל החיילים הפעילים ביום שנבחר, כולל מי שמסומן כ״יציאה״ או ״חזרה״. חייל שמסומן ״חופשה״ לא יופיע.</p>
+
+      <div class="row" style="gap:10px; flex-wrap:wrap; margin-top:10px">
+        <label class="pill">תאריך <input id="dailyReportDate" type="date" style="margin-inline-start:8px"/></label>
+        <button id="dailyReportGenBtn" class="primary">צור דוח</button>
+        <button id="dailyReportExportBtn" class="ghost">ייצא CSV</button>
+      </div>
+
+      <div class="hr"></div>
+      <div id="dailyReportBox" class="small"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: Vacation Calendar -->
+  <div id="vacModal" class="modal hidden">
+    <div class="modalCard">
+      <div class="row" style="justify-content:space-between; align-items:center">
+        <h2 style="margin:0">יומן חופשות</h2>
+        <button id="vacCloseBtn" class="ghost">סגור</button>
+      </div>
+      <p class="small">עמודה ימנית: שמות. למעלה: תאריכים. לחיצה על תא מחליפה בין <b>פעיל</b> / <b>חופשה</b> / <b>יציאה</b> / <b>חזרה</b>. בין יציאה לחזרה המערכת מסמנת אוטומטית חופשה (אפשר לשנות ידנית). בשמאל: סיכומים. למטה: כמה פעילים בכל יום.</p>
+
+      <div class="row" style="gap:10px; flex-wrap:wrap; margin-top:10px">
+        <div class="pill">טווח תצוגה</div>
+        <label class="pill">מתאריך <input id="vacFrom" type="date" style="margin-inline-start:8px"/></label>
+        <label class="pill">עד תאריך <input id="vacTo" type="date" style="margin-inline-start:8px"/></label>
+        <label class="pill">מינ׳ פעילים ליום <input id="vacMinActive" type="number" min="0" step="0.5" value="0" style="width:84px; margin-inline-start:8px"/></label>
+        <button id="vacReloadBtn" class="ghost">טען טווח</button>
+        <button id="vacAllActiveBtn" class="ghost">סמן הכל פעיל</button>
+        <button id="vacClearBtn" class="danger">נקה יומן</button>
+        <button id="vacExportBtn" class="ghost">ייצא CSV</button>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="gridWrap" style="max-height:70vh">
+        <table class="mini" id="vacTable"></table>
+      </div>
+
+      <p class="small" style="margin-top:10px">שים לב: ימי חופשה נכנסים כאילוץ בשיבוץ האוטומטי (החייל לא ישובץ בתאריך הזה).</p>
+    </div>
+  </div>
+
+
+
+
+  <!-- MODAL: Manage Soldiers -->
+  <div id="modalBack" class="modalBackdrop">
+    <div class="card modal">
+      <div class="row" style="justify-content:space-between; align-items:center">
+        <div>
+          <h1 style="margin:0">ניהול חיילים</h1>
+          <p class="small" style="margin-top:6px">יבוא CSV, הוספה/עריכה/מחיקה, חיפוש. נשמר מקומית לפי גזרה.</p>
+        </div>
+        <button id="closeModalBtn" class="danger">סגור</button>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="row">
+        <input id="soldierSearch" placeholder="חיפוש לפי שם / ID / מחלקה / צוות..." style="flex:1" />
+        <button id="exportSoldiersBtn" class="ghost">ייצא חיילים CSV</button>
+      </div>
+
+      <label>יבוא CSV (עמודות: id,name,platoon,team,active)</label>
+      <div class="row">
+        <input id="csvFile" type="file" accept=".csv,text/csv" style="flex:1" />
+        <button id="importCsvBtn" class="primary">ייבא והחלף רשימה</button>
+        <button id="mergeCsvBtn" class="ghost">ייבא ומזג</button>
+      </div>
+      <p class="small">החלפה = מוחק רשימה קיימת ומחליף בחדשה. מזג = מעדכן/מוסיף לפי ID.</p>
+
+      <div class="hr"></div>
+      <h2>הוספה / עריכה</h2>
+      <div class="row">
+        <input id="f_id" placeholder="ID (חובה)" style="flex:1" />
+        <input id="f_name" placeholder="שם (חובה)" style="flex:2" />
+      </div>
+      <div class="row" style="margin-top:10px">
+        <input id="f_platoon" placeholder="מחלקה (platoon)" style="flex:1" />
+        <input id="f_team" placeholder="צוות (team)" style="flex:1" />
+        <select id="f_active" style="flex:1">
+          <option value="1">פעיל</option>
+          <option value="0">לא פעיל</option>
+        </select>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button id="saveSoldierBtn" class="primary">שמור</button>
+        <button id="clearFormBtn" class="ghost">נקה טופס</button>
+        <button id="deleteSoldierBtn" class="danger">מחק לפי ID</button>
+      </div>
+      <p id="soldierMsg" class="small"></p>
+
+      <div class="hr"></div>
+      <h2>רשימה</h2>
+      <div class="gridWrap" style="max-height:50vh">
+        <table class="mini" id="soldiersTable">
+          <thead>
+            <tr>
+              <th>ID</th><th>שם</th><th>מחלקה</th><th>צוות</th><th>תפקידים</th><th>סטטוס</th><th>פעולות</th>
+            </tr>
+          </thead>
+          <tbody id="soldiersTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Assign Soldier -->
+  <div id="assignBack" class="modalBackdrop">
+    <div class="card modal">
+      <div class="row" style="justify-content:space-between; align-items:center">
+        <div>
+          <h1 style="margin:0">שיבוץ ידני</h1>
+          <p id="assignSubtitle" class="small" style="margin-top:6px"></p>
+        </div>
+        <button id="closeAssignBtn" class="danger">סגור</button>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="row">
+        <input id="assignSearch" placeholder="חפש חייל (שם/ID/מחלקה/צוות)..." style="flex:1" />
+        <button id="clearAssignBtn" class="ghost">מחק שיבוץ</button>
+      </div>
+      <p id="assignWarn" class="small"></p>
+
+      <div class="hr"></div>
+      <div class="gridWrap" style="max-height:60vh">
+        <table class="mini">
+          <thead><tr><th>ID</th><th>שם</th><th>מחלקה</th><th>צוות</th><th>פעולה</th></tr></thead>
+          <tbody id="assignTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const el = (id)=>document.getElementById(id);
+  const DAY_MIN = 24*60;
+
+  function pad2(n){return String(n).padStart(2,'0');}
+  function parseHHMM(hhmm){ const [h,m]=hhmm.split(':').map(Number); return h*60+m; }
+  function fmtHHMM(min){ min=((min%DAY_MIN)+DAY_MIN)%DAY_MIN; const h=Math.floor(min/60), m=min%60; return `${pad2(h)}:${pad2(m)}`; }
+  function isoDate(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+  function addDays(iso, days){ const d=new Date(iso+"T00:00:00"); d.setDate(d.getDate()+days); return isoDate(d); }
+  function dateRange(fromISO,toISO){ const out=[]; const from=new Date(fromISO+"T00:00:00"); const to=new Date(toISO+"T00:00:00"); for(let d=new Date(from); d<=to; d.setDate(d.getDate()+1)) out.push(isoDate(d)); return out; }
+  const escCsv = (s)=> `"${String(s??"").replaceAll('"','""')}"`;
+
+  async function sha256Hex(str){
+    const enc=new TextEncoder().encode(str);
+    const hashBuf=await crypto.subtle.digest('SHA-256', enc);
+    const bytes=Array.from(new Uint8Array(hashBuf));
+    return bytes.map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  async function loadJson(path){ const res=await fetch(path,{cache:'no-store'}); if(!res.ok) throw new Error(`Failed to load ${path}: ${res.status}`); return await res.json(); }
+
+  // Session auth
+  function setSession(on, sectorId, idleMinutes){
+    if(on){
+      localStorage.setItem('shibutz_authed','1');
+      localStorage.setItem('shibutz_sector', sectorId);
+      localStorage.setItem('shibutz_last', String(Date.now()));
+      localStorage.setItem('shibutz_idle', String(idleMinutes ?? 30));
+    } else {
+      localStorage.removeItem('shibutz_authed');
+      localStorage.removeItem('shibutz_sector');
+      localStorage.removeItem('shibutz_last');
+      localStorage.removeItem('shibutz_idle');
+    }
+  }
+  function touchSession(){ if(localStorage.getItem('shibutz_authed')==='1') localStorage.setItem('shibutz_last',String(Date.now())); }
+  function isSessionValid(){
+    if(localStorage.getItem('shibutz_authed')!=='1') return false;
+    const last=Number(localStorage.getItem('shibutz_last')||'0');
+    const idle=Number(localStorage.getItem('shibutz_idle')||'30');
+    return (Date.now()-last) <= idle*60*1000;
+  }
+
+  // Role session (admin/soldier)
+  function setRoleSession(role, soldier_id){
+    localStorage.setItem('shibutz_role', role || 'admin');
+    if(role === 'soldier') localStorage.setItem('shibutz_soldier_id', String(soldier_id||''));
+    else localStorage.removeItem('shibutz_soldier_id');
+  }
+  function getRoleSession(){
+    return {
+      role: localStorage.getItem('shibutz_role') || 'admin',
+      soldier_id: localStorage.getItem('shibutz_soldier_id') || ''
+    };
+  }
+
+  // State
+  let MANIFEST=null, SECTOR=null, CONFIG=null, TASKS=null;
+  let CURRENT_ROLE = 'admin';
+  let COMMANDER_FILTER = 'all'; // all | free | busy
+  let CURRENT_SOLDIER_ID = '';
+  let SOLDIERS=null, SOLDIERS_DEFAULT=null;
+  let MANUAL_MODE=false;
+  let LAST_CSV="";
+  let ASSIGN={};
+
+  function rememberKey(){ return "shibutz_v8_last_sector"; }
+  function storageKeyForSector(sectorId){ return `shibutz_assign_v8__${sectorId}`; }
+  function loadAssignForSector(sectorId){
+    try{ ASSIGN = JSON.parse(localStorage.getItem(storageKeyForSector(sectorId))||"{}"); } catch{ ASSIGN = {}; }
+  }
+  function saveAssignForSector(sectorId){ localStorage.setItem(storageKeyForSector(sectorId), JSON.stringify(ASSIGN)); }
+
+  // Soldiers dynamic storage
+  function soldiersKey(sectorId){ return `shibutz_soldiers_v8__${sectorId}`; }
+  function saveSoldiersDynamic(sectorId, list){
+    localStorage.setItem(soldiersKey(sectorId), JSON.stringify({updatedAt:Date.now(), list}));
+  }
+  function loadSoldiersDynamic(sectorId){
+    try{
+      const raw = localStorage.getItem(soldiersKey(sectorId));
+      if(!raw) return null;
+      const obj = JSON.parse(raw);
+      if(Array.isArray(obj.list)) return obj.list;
+    } catch(e){}
+    return null;
+  }
+
+  function activeSoldiers(){
+    return (SOLDIERS?.active_soldiers||[]).filter(s=>String(s.active ?? "1") !== "0");
+  }
+
+  function availableSoldiersForDate(dateISO){
+    return activeSoldiers().filter(s=> !isUnavailableByVac(dateISO, s.id));
+  }
+
+
+  function buildLookups(){
+    const soldierById=new Map(); activeSoldiers().forEach(s=>soldierById.set(String(s.id),s));
+    const taskById=new Map(); (TASKS?.tasks||[]).forEach(t=>taskById.set(t.id,t));
+    return { soldierById, taskById };
+  }
+
+  function exceptionMap(){
+    const map=new Map();
+    (CONFIG?.availability?.exceptions||[]).forEach(e=>{
+      if(!map.has(e.date)) map.set(e.date,new Map());
+      map.get(e.date).set(e.soldier_id, e.status || "OUT");
+    });
+    return map;
+  }
+  function isNeverAssign(soldierId, taskId){ return (CONFIG?.rules?.never_assign||[]).some(x=>x.soldier_id===soldierId && x.task_id===taskId); }
+  function passesOrganic(soldierId, task){
+    if(!task || !task.organic) return true;
+    const allowed = Array.isArray(task.allowed_platoons) ? task.allowed_platoons : [];
+    if(allowed.length===0) return true;
+    const s = activeSoldiers().find(x=>String(x.id)===String(soldierId));
+    return allowed.includes(String(s?.platoon ?? ""));
+  }
+  function dayBoundaryMin(){ return parseHHMM(CONFIG?.app?.day_boundary_hhmm || "06:00"); }
+
+  function taskSlotsForDay(dayStartISO){
+    const boundary = dayBoundaryMin();
+    const slots=[];
+    (TASKS?.tasks||[]).forEach(task=>{
+      const people = Number(task.people || 1);
+      for(let k=0;k<people;k++){
+        if(task.mode === "DAILY"){
+          slots.push({date: dayStartISO, task_id: task.id, task_name: task.name, slot:k+1, gridStart:0, gridEnd:1440, countedHours:Number(task.day_hours_count ?? 10), mode:"DAILY"});
+        } else if(task.mode === "SHIFT"){
+          const s = parseHHMM(task.window.start);
+          let e = parseHHMM(task.window.end);
+          if(e <= s) e += 1440;
+          const dayStart = boundary, dayEnd = boundary + 1440;
+          const candidates = [{a:s,b:e},{a:s+1440,b:e+1440}];
+          let best=null;
+          for(const c of candidates){
+            const ovStart = Math.max(c.a, dayStart);
+            const ovEnd = Math.min(c.b, dayEnd);
+            if(ovEnd > ovStart){ best={ovStart,ovEnd}; break; }
+          }
+          if(!best) return;
+          const gridStart = best.ovStart - dayStart;
+          const gridEnd = best.ovEnd - dayStart;
+          slots.push({date: dayStartISO, task_id: task.id, task_name: task.name, slot:k+1, gridStart, gridEnd, countedHours:(gridEnd-gridStart)/60, mode:"SHIFT"});
+        }
+      }
+    });
+    slots.sort((a,b)=>a.gridStart-b.gridStart || a.task_id.localeCompare(b.task_id) || a.slot-b.slot);
+    return slots;
+  }
+
+  function slotKey(dateISO, taskId, slot){ return `${dateISO}|${taskId}|${slot}`; }
+  function getAssigned(dateISO, taskId, slot){ return ASSIGN[slotKey(dateISO,taskId,slot)] || null; }
+  function setAssigned(dateISO, taskId, slot, soldier_id, source){
+    const k = slotKey(dateISO,taskId,slot);
+    if(!soldier_id) delete ASSIGN[k];
+    else ASSIGN[k] = { soldier_id, source, ts: Date.now() };
+    saveAssignForSector(SECTOR.id);
+  }
+
+  function validateAssignment(dateISO, slotObj, soldierId){
+    const { taskById } = buildLookups();
+    const t = taskById.get(slotObj.task_id);
+    const ex = exceptionMap().get(dateISO);
+    if(ex && ex.get(soldierId)==="OUT") return "OUT";
+    if(isNeverAssign(soldierId, slotObj.task_id)) return "never_assign";
+    if(!passesOrganic(soldierId, t)) return "organic";
+    return "";
+  }
+
+  function clearAssignmentsFromNow(){
+    const now = new Date();
+    const nowISO = isoDate(now);
+    const nowMin = now.getHours()*60 + now.getMinutes();
+    const boundary = dayBoundaryMin();
+    const dayStartISO = (nowMin >= boundary) ? nowISO : addDays(nowISO, -1);
+    const gridNow = (nowMin - boundary + 1440) % 1440;
+
+    const keep = {};
+    for(const [k, v] of Object.entries(ASSIGN)){
+      const [dateISO, taskId, slotStr] = k.split('|');
+      const s0 = taskSlotsForDay(dateISO).find(s => s.task_id===taskId && String(s.slot)===String(slotStr));
+      const startsAt = s0 ? s0.gridStart : 0;
+      const shouldClear = (dateISO > dayStartISO) || (dateISO === dayStartISO && startsAt >= gridNow);
+      if(!shouldClear) keep[k] = v;
+    }
+    ASSIGN = keep;
+    saveAssignForSector(SECTOR.id);
+  }
+
+  function scheduleAutoFill(fromISO,toISO, keepManual=true){
+    const { soldierById, taskById } = buildLookups();
+    const soldierIds=activeSoldiers().map(s=>String(s.id));
+    const maxHrsPerDay=Number(CONFIG?.constraints?.max_work_hours_per_day ?? 10);
+    const minRestHrs=Number(CONFIG?.constraints?.min_rest_hours_between_shifts ?? 8);
+    const exMap = exceptionMap();
+    const dates = dateRange(fromISO,toISO);
+
+    const totalHours = new Map(soldierIds.map(id=>[id,0]));
+    const dayHours = new Map();
+    const lastEndAbs = new Map();
+    const poolHours = new Map(); // poolId -> Map(sid->hours)
+    function getPoolMap(poolId){
+      if(!poolId) return null;
+      if(!poolHours.has(poolId)) poolHours.set(poolId, new Map(soldierIds.map(id=>[id,0])));
+      return poolHours.get(poolId);
+    }
+
+    let all=[];
+    dates.forEach((d, dayIndex)=>{
+      const slots=taskSlotsForDay(d).map(s=>({...s,_dayIndex:dayIndex,_startAbs:dayIndex*1440+s.gridStart,_endAbs:dayIndex*1440+s.gridEnd}));
+      all=all.concat(slots);
+    });
+    all.sort((a,b)=>a._startAbs-b._startAbs || a.task_id.localeCompare(b.task_id) || a.slot-b.slot);
+
+    // seed
+    all.forEach(slotObj=>{
+      const dateISO = slotObj.date;
+      if(!dayHours.has(dateISO)) dayHours.set(dateISO,new Map());
+      const k = slotKey(dateISO, slotObj.task_id, slotObj.slot);
+      const existing = ASSIGN[k];
+      if(existing && keepManual && (existing.source==="manual" || existing.source==="auto")){
+        const sid = String(existing.soldier_id);
+        totalHours.set(sid, (totalHours.get(sid)||0) + slotObj.countedHours);
+        dayHours.get(dateISO).set(sid, (dayHours.get(dateISO).get(sid)||0) + slotObj.countedHours);
+        lastEndAbs.set(sid, slotObj._endAbs);
+      // pool hours
+      try{ const t1 = taskById.get(slotObj.task_id); const pm1 = getPoolMap(t1?.rotation_pool); if(pm1) pm1.set(sid, (pm1.get(sid)||0) + slotObj.countedHours); }catch(e){}
+        // pool hours seed
+        try{ const t0 = taskById.get(slotObj.task_id); const pm0 = getPoolMap(t0?.rotation_pool); if(pm0) pm0.set(sid, (pm0.get(sid)||0) + slotObj.countedHours); }catch(e){}
+      }
+    });
+
+    const failures=[];
+    all.forEach(slotObj=>{
+      const dateISO = slotObj.date;
+      if(!dayHours.has(dateISO)) dayHours.set(dateISO,new Map());
+      const k = slotKey(dateISO, slotObj.task_id, slotObj.slot);
+      const existing = ASSIGN[k];
+      if(existing && keepManual && (existing.source==="manual" || existing.source==="auto")) return;
+
+      const boundary = dayBoundaryMin();
+      const slotStartMin = (boundary + slotObj.gridStart) % 1440;
+
+      const tTask = taskById.get(slotObj.task_id);
+      const rr = taskRoleRules(tTask);
+      const pm = getPoolMap(tTask?.rotation_pool);
+
+      let candidates = soldierIds
+        .map(id=>{
+          const soldier = soldierById.get(String(id));
+          if(exMap.get(dateISO)?.get(id)==="OUT") return null;
+          if(isNeverAssign(id, slotObj.task_id)) return null;
+          if(!passesOrganic(id, tTask)) return null;
+
+          if(!stateAllowsSlot(dateISO, id, slotStartMin)) return null;
+
+          if(rr.forbidden?.length && hasAnyRole(soldier, rr.forbidden)) return null;
+          if(rr.required_any?.length && !hasAnyRole(soldier, rr.required_any)) return null;
+
+          const cur = dayHours.get(dateISO).get(id) || 0;
+          if(cur + slotObj.countedHours > maxHrsPerDay) return null;
+
+          const last = lastEndAbs.get(id);
+          if(last != null && (slotObj._startAbs - last) < minRestHrs*60) return null;
+
+          const pref = (rr.preferred?.length && hasAnyRole(soldier, rr.preferred)) ? 1 : 0;
+          const pool = pm ? (pm.get(id)||0) : 0;
+          return {id, total: totalHours.get(id)||0, day: cur, pool, pref};
+        })
+        .filter(Boolean);
+
+      if(rr.prefer_if_available && rr.preferred?.length){
+        const anyPref = candidates.some(c=>c.pref===1);
+        if(anyPref) candidates = candidates.filter(c=>c.pref===1);
+      }
+
+      candidates.sort((a,b)=>(a.total-b.total)||(a.day-b.day)||(a.pool-b.pool)||(b.pref-a.pref)||a.id.localeCompare(b.id));
+
+      if(!candidates.length){ failures.push(slotObj); return; }
+      const sid = candidates[0].id;
+      ASSIGN[k] = { soldier_id: sid, source:"auto", ts: Date.now() };
+      totalHours.set(sid, (totalHours.get(sid)||0) + slotObj.countedHours);
+      dayHours.get(dateISO).set(sid, (dayHours.get(dateISO).get(sid)||0) + slotObj.countedHours);
+      lastEndAbs.set(sid, slotObj._endAbs);
+        // pool hours seed
+        try{ const t0 = taskById.get(slotObj.task_id); const pm0 = getPoolMap(t0?.rotation_pool); if(pm0) pm0.set(sid, (pm0.get(sid)||0) + slotObj.countedHours); }catch(e){}
+    });
+
+    saveAssignForSector(SECTOR.id);
+
+    const boundary = dayBoundaryMin();
+    const lines = ["sector,date,task_id,task_name,slot,start,end,counted_hours,soldier_id,soldier_name,source,platoon,team"];
+    all.forEach(slotObj=>{
+      const k = slotKey(slotObj.date, slotObj.task_id, slotObj.slot);
+      const a = ASSIGN[k];
+      const s = a ? soldierById.get(String(a.soldier_id)) : null;
+      lines.push([
+        escCsv(SECTOR.id),
+        slotObj.date,
+        slotObj.task_id,
+        escCsv(slotObj.task_name),
+        slotObj.slot,
+        escCsv(fmtHHMM((boundary + slotObj.gridStart)%1440)),
+        escCsv(fmtHHMM((boundary + slotObj.gridEnd)%1440)),
+        slotObj.countedHours,
+        a?.soldier_id || "",
+        escCsv(s?.name || ""),
+        a?.source || "",
+        escCsv(s?.platoon || ""),
+        escCsv(s?.team || ""),
+      ].join(","));
+    });
+    LAST_CSV = lines.join("\n");
+    el('exportBtn').disabled = false;
+
+    return {failures};
+  }
+
+  function renderRules(){
+    const c = CONFIG?.constraints||{};
+    const boundary = CONFIG?.app?.day_boundary_hhmm || "06:00";
+    el('rulesBox').innerHTML = [
+      `<div class="pill">גזרה: <b>${SECTOR.name}</b></div>`,
+      `<div class="pill">תחילת יממה: <b class="mono">${boundary}</b></div>`,
+      `<div class="pill">מקס׳ שעות/יום: <b>${c.max_work_hours_per_day ?? '—'}</b></div>`,
+      `<div class="pill">מנוחה מינ׳: <b>${c.min_rest_hours_between_shifts ?? '—'}</b> שעות</div>`,
+      `<div class="pill">חיילים פעילים: <b>${activeSoldiers().length}</b></div>`
+    ].join('');
+  }
+
+  function renderStats(fromISO,toISO){
+    const dates = dateRange(fromISO,toISO);
+    const hours = new Map(activeSoldiers().map(s=>[String(s.id),0]));
+    dates.forEach(d=>{
+      const slots = taskSlotsForDay(d);
+      slots.forEach(slotObj=>{
+        const a = getAssigned(d, slotObj.task_id, slotObj.slot);
+        if(!a) return;
+        const id = String(a.soldier_id);
+        if(!hours.has(id)) hours.set(id,0);
+        hours.set(id, (hours.get(id)||0) + slotObj.countedHours);
+      });
+    });
+    const rows = activeSoldiers().map(s=>({
+      name:s.name, id:String(s.id), platoon:s.platoon??"", team:s.team??"", hours: hours.get(String(s.id))||0
+    })).sort((a,b)=>b.hours-a.hours).slice(0,20);
+
+    const total = Array.from(hours.values()).reduce((a,b)=>a+b,0);
+    const avg = activeSoldiers().length ? total/(activeSoldiers().length) : 0;
+
+    let html = `<div class="row">
+      <span class="pill">סה״כ שעות: <b>${total.toFixed(1)}</b></span>
+      <span class="pill">ממוצע לחייל: <b>${avg.toFixed(1)}</b></span>
+      <span class="pill">מציג Top 20</span>
+    </div>`;
+    html += `<div class="hr"></div>`;
+    html += `<table style="width:100%; border-collapse:collapse">
+      <thead><tr><th style="text-align:right;color:var(--muted);font-size:12px">חייל</th><th style="text-align:right;color:var(--muted);font-size:12px">מחלקה</th><th style="text-align:right;color:var(--muted);font-size:12px">צוות</th><th style="text-align:right;color:var(--muted);font-size:12px">שעות</th></tr></thead>
+      <tbody>`;
+    rows.forEach(r=>{
+      html += `<tr>
+        <td style="padding:6px 0">${r.name} <span class="mono small">(${r.id})</span></td>
+        <td style="padding:6px 0">${r.platoon}</td>
+        <td style="padding:6px 0">${r.team}</td>
+        <td style="padding:6px 0"><b>${r.hours.toFixed(1)}</b></td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    el('statsBox').innerHTML = html;
+  }
+
+  function buildGrid(viewDateISO){
+    const { soldierById } = buildLookups();
+    const boundary = dayBoundaryMin();
+    const tasks = (TASKS?.tasks||[]);
+
+    const head = el('gridHead');
+    head.innerHTML = '';
+    const th0 = document.createElement('th');
+    th0.className = "timeCol";
+    th0.textContent = "שעה";
+    head.appendChild(th0);
+
+    tasks.forEach(t=>{
+      const th = document.createElement('th');
+      th.innerHTML = `<div style="display:flex;flex-direction:column;gap:4px">
+        <div style="font-weight:900">${t.name}</div>
+        <div class="small mono" style="color:var(--muted)">${t.mode==="DAILY" ? "יומי" : (t.window?.start + "–" + t.window?.end)} · אנשים: ${t.people||1}</div>
+        <div class="small" style="color:var(--muted)">אורגני: <b>${t.organic ? "כן" : "לא"}</b></div>
+      </div>`;
+      head.appendChild(th);
+    });
+
+    const slots = taskSlotsForDay(viewDateISO);
+    const byTask = new Map();
+    slots.forEach(s=>{ if(!byTask.has(s.task_id)) byTask.set(s.task_id, []); byTask.get(s.task_id).push(s); });
+
+    const body = el('gridBody');
+    body.innerHTML = '';
+    const occupied = new Set();
+
+    for(let r=0;r<24;r++){
+      const row = document.createElement('tr');
+      const timeMin = (boundary + r*60) % 1440;
+      const timeCell = document.createElement('th');
+      timeCell.className = "timeCol";
+      timeCell.innerHTML = `<div class="mono">${fmtHHMM(timeMin)}</div>`;
+      row.appendChild(timeCell);
+
+      tasks.forEach(t=>{
+        const list = byTask.get(t.id) || [];
+        const startAt = r*60;
+        const starter = list.find(s => s.gridStart === startAt);
+        if(starter){
+          const durationMin = starter.gridEnd - starter.gridStart;
+          const rowspan = Math.max(1, Math.round(durationMin / 60));
+          const td = document.createElement('td');
+          const alt = (r % 2) === 1;
+          td.innerHTML = `<div class="slotCell ${alt?'alt':''} ${MANUAL_MODE?'clickable':''}" data-date="${viewDateISO}" data-task="${starter.task_id}" data-slot="${starter.slot}"></div>`;
+          td.rowSpan = rowspan;
+          for(let rr=r; rr<r+rowspan; rr++) occupied.add(`${rr}|${t.id}|${starter.slot}`);
+          row.appendChild(td);
+        } else {
+          const covered = list.some(s => s.gridStart < startAt && s.gridEnd > startAt && occupied.has(`${r}|${t.id}|${s.slot}`));
+          if(!covered){
+            const td = document.createElement('td');
+            const alt = (r % 2) === 1;
+            td.innerHTML = `<div class="slotCell ${alt?'alt':''}"></div>`;
+            row.appendChild(td);
+          }
+        }
+      });
+
+      body.appendChild(row);
+    }
+
+    document.querySelectorAll(".slotCell[data-task]").forEach(div=>{
+      const dateISO = div.dataset.date;
+      const taskId = div.dataset.task;
+      const slot = Number(div.dataset.slot);
+      const slotObj = slots.find(s=>s.task_id===taskId && s.slot===slot);
+      const a = getAssigned(dateISO, taskId, slot);
+
+      let badge = "";
+      let who = `<span class="empty">לא שובץ</span>`;
+      let warn = "";
+
+      if(a){
+        const s = soldierById.get(String(a.soldier_id));
+        who = `${s ? s.name : a.soldier_id} <span class="mono small">(${a.soldier_id})</span>`;
+        badge = `<span class="badge ${a.source==='manual'?'manual':'auto'}">${a.source==='manual'?'ידני':'אוטו'}</span>`;
+        const v = validateAssignment(dateISO, slotObj, String(a.soldier_id));
+        if(v){ warn = `<div class="slotSub warn">אזהרה: ${v}</div>`; badge += ` <span class="badge warn">⚠</span>`; }
+      }
+
+      const start = fmtHHMM((boundary + slotObj.gridStart) % 1440);
+      const end = fmtHHMM((boundary + slotObj.gridEnd) % 1440);
+
+      div.innerHTML = `
+        <div class="slotMeta">
+          <div>
+            <div class="slotTitle">${slotObj.task_name}</div>
+            <div class="slotSub mono">${slotObj.mode==="DAILY" ? "06:00–06:00" : (start + "–" + end)} · סלוט ${slotObj.slot}</div>
+          </div>
+          <div>${badge}</div>
+        </div>
+        <div class="assignee">${who}</div>
+        ${warn}
+      `;
+      div.title = MANUAL_MODE ? "לחץ כדי לשבץ ידנית" : "";
+    });
+  }
+
+  function wireGridClicks(){
+    document.querySelectorAll(".slotCell[data-task]").forEach(div=>{
+      div.addEventListener('click', ()=>{
+        if(!MANUAL_MODE) return;
+        openAssignModal(div.dataset.date, div.dataset.task, Number(div.dataset.slot));
+      });
+    });
+  }
+
+  function refreshView(){
+    const from = el('fromDate').value;
+    const to = el('toDate').value;
+    const view = el('viewDate').value;
+    if(!(from && to)) { try{ el('commanderBox').innerHTML=''; }catch(e){} }
+    if(view) buildGrid(view);
+    if(from && to) { renderStats(from,to); computeCommanderOverview(from,to); }
+    el('autoFillBtn').disabled = !MANUAL_MODE;
+    wireGridClicks();
+  }
+
+  // ===== CSV Parser (RFC4180-ish) =====
+  function parseCsvRFC(text){
+    const rows=[];
+    let row=[], field="", inQuotes=false;
+    for(let i=0;i<text.length;i++){
+      const c=text[i];
+      if(inQuotes){
+        if(c === '"'){
+          if(text[i+1] === '"'){ field+='"'; i++; }
+          else { inQuotes=false; }
+        } else {
+          field += c;
+        }
+      } else {
+        if(c === '"'){ inQuotes=true; }
+        else if(c === ','){ row.push(field); field=""; }
+        else if(c === '\n'){
+          row.push(field); field="";
+          // drop empty trailing row
+          if(!(row.length===1 && row[0]==="")) rows.push(row);
+          row=[];
+        } else if(c === '\r'){ /* ignore */ }
+        else { field += c; }
+      }
+    }
+    row.push(field);
+    if(!(row.length===1 && row[0]==="")) rows.push(row);
+    return rows;
+  }
+
+  function csvToSoldiers(text){
+    const rows = parseCsvRFC(text);
+    if(!rows.length) return [];
+    const header = rows[0].map(h=>String(h).trim().toLowerCase());
+    const idx = (name)=>header.indexOf(name);
+    const out=[];
+    for(let i=1;i<rows.length;i++){
+      const r=rows[i];
+      const get = (name)=>{
+        const j=idx(name);
+        return (j>=0 && j<r.length) ? String(r[j]??"").trim() : "";
+      };
+      const id=get('id');
+      const name=get('name');
+      if(!id || !name) continue;
+      const platoon=get('platoon');
+      const team=get('team');
+      const active=get('active') || "1";
+      out.push({id, name, platoon, team, active:(active==="0"?"0":"1")});
+    }
+    return out;
+  }
+
+  function soldiersToCsv(list){
+    const lines=["id,name,platoon,team,active"];
+    list.forEach(s=>{
+      const row=[String(s.id??""), String(s.name??""), String(s.platoon??""), String(s.team??""), (s.active==="0"?"0":"1")]
+        .map(v=> `"${v.replaceAll('"','""')}"`)
+        .join(",");
+      lines.push(row);
+    });
+    return lines.join("\n");
+  }
+
+  // ===== Soldiers Modal =====
+  function setSoldiersList(list){
+    saveSoldiersDynamic(SECTOR.id, list);
+    SOLDIERS = { ...SOLDIERS_DEFAULT, active_soldiers: list };
+    el('appSub').textContent = `גזרה: ${SECTOR.name} · חיילים פעילים: ${activeSoldiers().length} · משימות: ${(TASKS?.tasks?.length||0)}`;
+    renderRules();
+    refreshView();
+  }
+
+  function renderSoldiersTable(){
+    const q = (el('soldierSearch').value||"").trim().toLowerCase();
+    const tbody = el('soldiersTbody');
+    tbody.innerHTML = "";
+
+    const list = (SOLDIERS?.active_soldiers||[])
+      .map(s=>({id:String(s.id||"").trim(), name:String(s.name||"").trim(), platoon:String(s.platoon||"").trim(), team:String(s.team||"").trim(), active:(s.active===0||s.active==="0"||s.active===false)?"0":"1"}))
+      .filter(s=>{
+        if(!q) return true;
+        return (s.id.toLowerCase().includes(q) || s.name.toLowerCase().includes(q) || s.platoon.toLowerCase().includes(q) || s.team.toLowerCase().includes(q));
+      })
+      .sort((a,b)=>a.id.localeCompare(b.id));
+
+    list.forEach(s=>{
+      const tr = document.createElement('tr');
+      const status = s.active==="1" ? '<span class="ok">פעיל</span>' : '<span class="warn">לא פעיל</span>';
+      tr.innerHTML = `
+        <td class="mono">${s.id}</td>
+        <td>${s.name}</td>
+        <td>${s.platoon}</td>
+        <td>${s.team}</td>
+        <td class="small">${(s.roles||[]).map(roleName).join(' · ')}</td>
+        <td>${status}</td>
+        <td>
+          <button class="btnSm ghost" data-act="edit" data-id="${s.id}">ערוך</button>
+          <button class="btnSm ghost" data-act="roles" data-id="${s.id}">תפקידים</button>
+          <button class="btnSm danger" data-act="del" data-id="${s.id}">מחק</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    tbody.querySelectorAll('button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const act = btn.dataset.act;
+        const id = btn.dataset.id;
+        if(act==='roles'){
+          const sol = (SOLDIERS?.active_soldiers||[]).find(x=>String(x.id)===String(id));
+          const available = allRoles().map(r=>`${r.id}:${r.name}`).join(', ');
+          const current = soldierRoles(sol).join(', ');
+          const ans = prompt(`עריכת תפקידים לחייל ${sol?.name||id}\nהזן ROLE IDs מופרדים בפסיקים לפי סדר עדיפות.\nזמינים: ${available}\nדוגמה: officer,fighter\n`, current);
+          if(ans===null) return;
+          sol.roles = ans.split(',').map(x=>x.trim()).filter(Boolean);
+          setSoldiersList(SOLDIERS.active_soldiers);
+          renderSoldiersTable();
+          refreshView();
+          return;
+        }
+        if(act==='edit'){
+          const s = (SOLDIERS.active_soldiers||[]).find(x=>String(x.id)===String(id));
+          if(!s) return;
+          el('f_id').value = String(s.id||"");
+          el('f_name').value = String(s.name||"");
+          el('f_platoon').value = String(s.platoon||"");
+          el('f_team').value = String(s.team||"");
+          el('f_active').value = (s.active===0||s.active==="0"||s.active===false) ? "0" : "1";
+          el('soldierMsg').innerHTML = '<span class="ok">נטען לטופס לעריכה.</span>';
+        } else if(act==='del'){
+          const ok = confirm(`למחוק חייל ID=${id}?`);
+          if(!ok) return;
+          const list = (SOLDIERS.active_soldiers||[]).filter(x=>String(x.id)!==String(id));
+          setSoldiersList(list);
+          el('soldierMsg').innerHTML = '<span class="ok">נמחק.</span>';
+          renderSoldiersTable();
+        }
+      });
+    });
+  }
+
+  // ===== Assign Modal (manual assignment) =====
+  let ASSIGN_CTX = null; // {dateISO, taskId, slot}
+  function openAssignModal(dateISO, taskId, slot){
+    const { taskById } = buildLookups();
+    const t = taskById.get(taskId);
+    ASSIGN_CTX = {dateISO, taskId, slot};
+    el('assignSubtitle').innerHTML = `תאריך: <span class="mono">${dateISO}</span> · משימה: <b>${t?.name || taskId}</b> · סלוט: <b>${slot}</b>`;
+    el('assignSearch').value = "";
+    el('assignWarn').innerHTML = '<span class="small">בחר חייל מהרשימה. אפשר לחפש. אם יש אזהרת אורגניות/אילוץ — נבקש אישור.</span>';
+    el('assignBack').style.display='flex';
+    renderAssignList();
+  }
+  function closeAssignModal(){ el('assignBack').style.display='none'; ASSIGN_CTX=null; }
+
+  function renderAssignList(){
+    if(!ASSIGN_CTX) return;
+    const {dateISO, taskId, slot} = ASSIGN_CTX;
+    const { taskById } = buildLookups();
+    const t = taskById.get(taskId);
+    const q = (el('assignSearch').value||"").trim().toLowerCase();
+    const tbody = el('assignTbody');
+    tbody.innerHTML = "";
+
+    const list = activeSoldiers()
+      .map(s=>({id:String(s.id), name:String(s.name||""), platoon:String(s.platoon||""), team:String(s.team||"")}))
+      .filter(s=>{
+        if(!q) return true;
+        return (s.id.toLowerCase().includes(q) || s.name.toLowerCase().includes(q) || s.platoon.toLowerCase().includes(q) || s.team.toLowerCase().includes(q));
+      })
+      .sort((a,b)=>a.name.localeCompare(b.name) || a.id.localeCompare(b.id))
+      .slice(0, 300); // safety for huge lists
+
+    list.forEach(s=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="mono">${s.id}</td>
+        <td>${s.name}</td>
+        <td>${s.platoon}</td>
+        <td>${s.team}</td>
+        <td><button class="btnSm primary" data-id="${s.id}">בחר</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    tbody.querySelectorAll('button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.dataset.id;
+        // validate organic + never_assign + out etc.
+        const slotObj = taskSlotsForDay(dateISO).find(x=>x.task_id===taskId && x.slot===slot);
+        const v = validateAssignment(dateISO, slotObj, id);
+        if(v){
+          const ok = confirm(`אזהרה: ${v}. לשבץ בכל זאת?`);
+          if(!ok) return;
+        } else if(!passesOrganic(id, t)){
+          const ok = confirm("אזהרה: לא עומד באורגניות. לשבץ בכל זאת?");
+          if(!ok) return;
+        }
+        setAssigned(dateISO, taskId, slot, id, "manual");
+        closeAssignModal();
+        refreshView();
+      });
+    });
+  }
+
+  // ===== Soldier view =====
+
+  function findNextShift(fromISO){
+    const soldierId = String(CURRENT_SOLDIER_ID||'');
+    const today = new Date();
+    const startISO = fromISO || isoDate(today);
+    const dates = dateRange(startISO, addDays(startISO, 30));
+    const boundary = dayBoundaryMin();
+    for(const d of dates){
+      const slots = taskSlotsForDay(d);
+      for(const slotObj of slots){
+        const a = getAssigned(d, slotObj.task_id, slotObj.slot);
+        if(!a || String(a.soldier_id)!==soldierId) continue;
+        const startMin = (boundary + slotObj.gridStart) % 1440;
+        const startDate = new Date(d+"T00:00:00");
+        startDate.setMinutes(startMin);
+        if(startDate > new Date()) return {date:d, start:startDate, slot:slotObj};
+      }
+    }
+    return null;
+  }
+
+  function updateNextShiftUI(){
+    const res = findNextShift(el('soldierFrom').value);
+    const alertEl = el('nextShiftAlert');
+    const alertText = el('nextShiftAlertText');
+    if(!res){
+      alertEl.classList.add('hidden');
+      alertEl.classList.remove('warn','pulse');
+      alertText.textContent='—';
+
+      el('nextShiftLabel').textContent = "אין";
+      el('nextShiftCountdown').textContent = "—";
+      return;
+    }
+    const diff = res.start - new Date();
+    // Show banner if within 24h
+    alertEl.classList.remove('hidden');
+    const hoursLeft = diff/3600000;
+    alertEl.classList.toggle('warn', hoursLeft <= 12);
+    alertEl.classList.toggle('pulse', hoursLeft <= 4);
+    alertText.textContent = `${el('nextShiftLabel').textContent} (בעוד ${el('nextShiftCountdown').textContent})`;
+
+    el('nextShiftLabel').textContent = res.date + " " + fmtHHMM(res.start.getHours()*60 + res.start.getMinutes());
+    const diff = res.start - new Date();
+    const h = Math.max(0, Math.floor(diff/3600000));
+    const m = Math.max(0, Math.floor((diff%3600000)/60000));
+    el('nextShiftCountdown').textContent = `${h}ש ${m}ד`;
+  }
+
+  function exportMineCSV(){
+    const soldierId = String(CURRENT_SOLDIER_ID||'');
+    const { soldierById } = buildLookups();
+    const s = soldierById.get(soldierId);
+    const from = el('soldierFrom').value;
+    const to = el('soldierTo').value;
+    const dates = dateRange(from,to);
+    const lines = ["date,task,start,end,hours"];
+    const boundary = dayBoundaryMin();
+    dates.forEach(d=>{
+      const slots = taskSlotsForDay(d);
+      slots.forEach(slotObj=>{
+        const a = getAssigned(d, slotObj.task_id, slotObj.slot);
+        if(!a || String(a.soldier_id)!==soldierId) return;
+        const start = slotObj.mode==="DAILY" ? "06:00" : fmtHHMM((boundary + slotObj.gridStart)%1440);
+        const end = slotObj.mode==="DAILY" ? "06:00" : fmtHHMM((boundary + slotObj.gridEnd)%1440);
+        lines.push([d, slotObj.task_name, start, end, slotObj.countedHours].join(","));
+      });
+    });
+    const blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `my_shifts_${s?.name||soldierId}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function computeCommanderOverview(fromISO,toISO){
+    const { soldierById } = buildLookups();
+    const dates = dateRange(fromISO,toISO);
+    const soldiers = activeSoldiers().map(s=>({id:String(s.id), name:s.name||String(s.id), platoon:s.platoon||"", team:s.team||""}));
+
+    const hours = new Map(soldiers.map(s=>[s.id,0]));
+    const unavailableDays = new Map(soldiers.map(s=>[s.id,new Set()])); // date set where not available due to DAILY or any assigned shift (optional)
+    const dailyBlockDays = new Map(soldiers.map(s=>[s.id,new Set()])); // specifically DAILY assignments
+
+    dates.forEach(d=>{
+      const slots = taskSlotsForDay(d);
+      slots.forEach(slotObj=>{
+        const a = getAssigned(d, slotObj.task_id, slotObj.slot);
+        if(!a) return;
+        const sid = String(a.soldier_id);
+        if(!hours.has(sid)) return;
+        // Workload hours
+        hours.set(sid, (hours.get(sid)||0) + Number(slotObj.countedHours||0));
+        // Unavailability (full-day block for DAILY)
+        if(slotObj.mode === "DAILY"){
+          dailyBlockDays.get(sid).add(d);
+          unavailableDays.get(sid).add(d);
+        } else {
+          // Shift makes them unavailable during that time; for commander summary we can mark the day as partially unavailable
+          unavailableDays.get(sid).add(d);
+        }
+      });
+    });
+
+    const daysCount = dates.length || 1;
+
+    const rows = soldiers.map(s=>{
+      const h = hours.get(s.id)||0;
+      const unDays = unavailableDays.get(s.id).size;
+      const dailyDays = dailyBlockDays.get(s.id).size;
+      const avgPerDay = h / daysCount;
+      return {...s, hours:h, avgPerDay, unDays, dailyDays};
+    });
+
+    // Busy ranking: by hours, then by unavailability days
+    rows.sort((a,b)=>(b.hours-a.hours) || (b.unDays-a.unDays) || a.name.localeCompare(b.name));
+
+    // Compute averages to show relative status
+    const avgH = rows.length ? rows.reduce((t,r)=>t+r.hours,0)/rows.length : 0;
+    const avgUn = rows.length ? rows.reduce((t,r)=>t+r.unDays,0)/rows.length : 0;
+
+    const top = rows.slice(0,25);
+    let const TARGET = 8.0;
+    const LOW = 7.5;
+    const HIGH = 8.5;
+
+    htmlOut = `<div class="row">
+      <span class="pill">טווח: <b class="mono">${fromISO}</b>–<b class="mono">${toISO}</b></span>
+      <span class="pill">ימים בטווח: <b>${daysCount}</b></span>
+      <span class="pill">יעד יומי: <b>${TARGET.toFixed(1)}</b> <span class="mono">(סבילות ${LOW.toFixed(1)}–${HIGH.toFixed(1)})</span></span>
+    </div>`;
+
+    htmlOut += `<div class="hr"></div>`;
+    htmlOut += `<div class="small" style="margin-bottom:8px">מפתח: <span class="badge auto">עמוס</span> (>8.5 ש׳/יום) · <span class="badge">מאוזן</span> (7.5–8.5) · <span class="badge warn">פנוי</span> (<7.5) · <span class="badge">Daily</span> = לא זמין יום שלם (שעות נספרות לפי ההגדרה)</div>`;
+
+    htmlOut += `<div class="gridWrap" style="max-height:42vh">
+      <table class="mini">
+        <thead><tr>
+          <th>חייל</th><th>מחלקה</th><th>צוות</th>
+          <th>שעות בטווח</th><th>שעות/יום</th><th>ימים לא זמין</th><th>מתוכם Daily</th><th>סטטוס</th>
+        </tr></thead>
+        <tbody>`;
+
+    top.forEach(r=>{
+      // Status by fixed target hours/day (ignore DAILY as 24h; countedHours already handles it)
+      let status = `<span class="badge">מאוזן</span>`;
+      if(r.avgPerDay > HIGH) status = `<span class="badge auto">עמוס</span>`;
+      else if(r.avgPerDay < LOW) status = `<span class="badge warn">פנוי</span>`;
+
+      // Commander filter
+      if(COMMANDER_FILTER === 'busy' && !(r.avgPerDay > HIGH)) return;
+      if(COMMANDER_FILTER === 'free' && !(r.avgPerDay < LOW)) return;
+
+      const dailyTag = r.dailyDays ? `<span class="badge">Daily</span>` : ``;
+      htmlOut += `<tr>
+        <td>${r.name} <span class="mono small">(${r.id})</span></td>
+        <td>${r.platoon}</td>
+        <td>${r.team}</td>
+        <td><b>${r.hours.toFixed(1)}</b></td>
+        <td><b>${r.avgPerDay.toFixed(1)}</b></td>
+        <td>${r.unDays}</td>
+        <td>${r.dailyDays} ${dailyTag}</td>
+        <td>${status}</td>
+      </tr>`;
+    });
+
+    htmlOut += `</tbody></table></div>`;
+    htmlOut += `<p class="small" style="margin-top:8px">הערה: “ימים לא זמין” מציין שיש לחייל לפחות שיבוץ אחד ביום זה. משימות Daily מסמנות “לא זמין” לכל היום, אך שעות העומס/יום נספרות לפי day_hours_count (לא 24).</p>`;
+
+    el('commanderBox').innerHTML = htmlOut;
+  }
+
+  function buildSoldierPrint(fromISO,toISO){
+    const { soldierById } = buildLookups();
+    const soldierId = String(CURRENT_SOLDIER_ID||'');
+    const s = soldierById.get(soldierId);
+    el('printMeta').innerHTML = `גזרה: <b>${SECTOR?.name||''}</b> · חייל: <b>${s?.name||soldierId}</b> <span class="mono small">(${soldierId})</span> · טווח: <span class="mono">${fromISO}</span>–<span class="mono">${toISO}</span>`;
+
+    // reuse timeline HTML, but force include empty OFF days = false in print (only days with assignments)
+    const saved = el('onlyAssignedChk')?.checked;
+    if(el('onlyAssignedChk')) el('onlyAssignedChk').checked = true;
+    renderSoldierTimeline(fromISO,toISO);
+    el('printTimeline').innerHTML = el('soldierTimeline').innerHTML;
+    if(el('onlyAssignedChk')) el('onlyAssignedChk').checked = saved;
+  }
+
+  function openPrintAndPrint(){
+    const from = el('soldierFrom').value;
+    const to = el('soldierTo').value;
+    buildSoldierPrint(from,to);
+    // show print view only for printing (CSS handles print)
+    el('printView').classList.remove('hidden');
+    window.print();
+    // hide after print
+    el('printView').classList.add('hidden');
+  }
+
+
+  function setView(mode){
+    // mode: 'login' | 'admin' | 'soldier'
+    if(mode==='login'){
+      el('loginView').classList.remove('hidden');
+      el('appView').classList.add('hidden');
+      el('soldierView').classList.add('hidden');
+    } else if(mode==='admin'){
+      el('loginView').classList.add('hidden');
+      el('appView').classList.remove('hidden');
+      el('soldierView').classList.add('hidden');
+    } else {
+      el('loginView').classList.add('hidden');
+      el('appView').classList.add('hidden');
+      el('soldierView').classList.remove('hidden');
+    }
+  }
+
+  function formatHebDate(iso){
+    // simple dd/mm
+    const [y,m,d] = iso.split('-');
+    return `${d}/${m}`;
+  }
+
+  function renderSoldierTimeline(fromISO,toISO){
+    const soldierId = String(CURRENT_SOLDIER_ID||'');
+    const { soldierById, taskById } = buildLookups();
+    const s = soldierById.get(soldierId);
+    const boundary = dayBoundaryMin();
+
+    el('soldierTitle').textContent = `שבצק – חייל`;
+    el('soldierSub').innerHTML = `גזרה: <b>${SECTOR?.name||''}</b> · חייל: <b>${s?.name||soldierId}</b> <span class="mono small">(${soldierId})</span>`;
+
+    const dates = dateRange(fromISO,toISO);
+    let htmlOut = '';
+    let any=false;
+
+    dates.forEach(d=>{
+      const slots = taskSlotsForDay(d);
+      const mine = [];
+      slots.forEach(slotObj=>{
+        const a = getAssigned(d, slotObj.task_id, slotObj.slot);
+        if(!a) return;
+        if(String(a.soldier_id) !== soldierId) return;
+        mine.push({...slotObj, source:a.source});
+      });
+      mine.sort((a,b)=>a.gridStart-b.gridStart || a.task_id.localeCompare(b.task_id) || a.slot-b.slot);
+
+      htmlOut += `<div class="card" style="margin:10px 0; background:#0f1930">`;
+      htmlOut += `<div class="row" style="justify-content:space-between; align-items:center">
+          <div style="font-weight:900">${formatHebDate(d)} <span class="mono small">(${d})</span></div>
+          <div class="pill">יממה: <span class="mono">${CONFIG?.app?.day_boundary_hhmm||'06:00'}→${CONFIG?.app?.day_boundary_hhmm||'06:00'}</span></div>
+        </div>`;
+
+      if(!mine.length){
+        htmlOut += `<p class="small" style="margin:8px 0">אין משימות משובצות ליום זה.</p>`;
+      } else {
+        any=true;
+        htmlOut += `<div style="margin-top:10px">`;
+        mine.forEach(slotObj=>{
+          const t = taskById.get(slotObj.task_id);
+          const start = (slotObj.mode==="DAILY") ? "06:00" : fmtHHMM((boundary + slotObj.gridStart)%1440);
+          const end = (slotObj.mode==="DAILY") ? "06:00" : fmtHHMM((boundary + slotObj.gridEnd)%1440);
+          const badge = `<span class="badge ${slotObj.source==='manual'?'manual':'auto'}">${slotObj.source==='manual'?'ידני':'אוטו'}</span>`;
+          const org = t?.organic ? `<span class="badge">אורגני</span>` : ``;
+          htmlOut += `<div class="slotCell" style="border-radius:12px; margin:8px 0">
+              <div class="slotMeta">
+                <div>
+                  <div class="slotTitle">${t?.name || slotObj.task_name}</div>
+                  <div class="slotSub mono">${start}–${end} · סלוט ${slotObj.slot} · שעות: ${Number(slotObj.countedHours).toFixed(1)}</div>
+                </div>
+                <div>${badge} ${org}</div>
+              </div>
+            </div>`;
+        });
+        htmlOut += `</div>`;
+      }
+      htmlOut += `</div>`;
+    });
+
+    if(!any){
+      el('soldierTimeline').innerHTML = `<p class="small">לא נמצאו שיבוצים בטווח. אם המפקד עדיין לא ביצע “בנה אוטומטית” — זה יופיע לאחר מכן.</p>` + htmlOut;
+    } else {
+      el('soldierTimeline').innerHTML = htmlOut;
+    }
+  }
+
+  async function loadSoldiersForLoginPreview(sectorId){
+    try{
+      const s = (MANIFEST?.sectors||[]).find(x=>x.id===sectorId);
+      if(!s) return [];
+      const base = s.base_path;
+      const soldiersDefault = await loadJson(base + "/soldiers.json");
+      const dyn = loadSoldiersDynamic(sectorId);
+      const list = dyn ? dyn : (soldiersDefault?.active_soldiers||[]);
+      return (list||[]).map(x=>({
+        id:String(x.id||'').trim(),
+        name:String(x.name||'').trim(),
+        platoon:String(x.platoon||''),
+        team:String(x.team||''),
+        active:(String(x.active??"1")==="0"?"0":"1"),
+      })).filter(x=>x.id && x.name && x.active==="1");
+    } catch(e){ return []; }
+  }
+
+  function fillSoldierSelectLogin(list, queryText){
+    const q = (queryText||'').trim().toLowerCase();
+    const sel = el('soldierSelectLogin');
+    sel.innerHTML = "";
+    const filtered = list.filter(s=>{
+      if(!q) return true;
+      return s.id.toLowerCase().includes(q) || s.name.toLowerCase().includes(q) || s.platoon.toLowerCase().includes(q) || s.team.toLowerCase().includes(q);
+    }).sort((a,b)=>a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
+    filtered.slice(0,500).forEach(s=>{
+      const opt=document.createElement('option');
+      opt.value = s.id;
+      opt.textContent = `${s.name} (${s.id}) · מחלקה ${s.platoon||'-'} · צוות ${s.team||'-'}`;
+      sel.appendChild(opt);
+    });
+  }
+
+
+  // ===== UI wiring =====
+  function fillSectorSelect(selectElId, descElId){
+    const sel = el(selectElId);
+    sel.innerHTML = "";
+    (MANIFEST?.sectors||[]).forEach(s=>{
+      const opt=document.createElement("option");
+      opt.value=s.id;
+      opt.textContent=s.name;
+      sel.appendChild(opt);
+    });
+    const remembered = MANIFEST?.app?.remember_last_sector ? (localStorage.getItem(rememberKey())||"") : "";
+    const defId = remembered || MANIFEST?.app?.default_sector_id || (MANIFEST?.sectors?.[0]?.id || "");
+    if(defId) sel.value = defId;
+
+    const desc = el(descElId);
+    const cur = (MANIFEST?.sectors||[]).find(x=>x.id===sel.value);
+    desc.textContent = cur?.description || "";
+    sel.addEventListener('change', ()=>{
+      const s = (MANIFEST?.sectors||[]).find(x=>x.id===sel.value);
+      desc.textContent = s?.description || "";
+    });
+  }
+
+  async function loadSectorFiles(sectorId){
+    const s = (MANIFEST?.sectors||[]).find(x=>x.id===sectorId);
+    if(!s) throw new Error("Sector not found");
+    SECTOR = s;
+    if(MANIFEST?.app?.remember_last_sector) localStorage.setItem(rememberKey(), sectorId);
+
+    const base = s.base_path;
+    CONFIG = await loadJson(base + "/config.json");
+    TASKS = await loadJson(base + "/tasks.json");
+    ROLES = await loadJson(base + "/roles.json");
+    SOLDIERS_DEFAULT = await loadJson(base + "/soldiers.json");
+
+    const dyn = loadSoldiersDynamic(sectorId);
+    SOLDIERS = dyn ? ({...SOLDIERS_DEFAULT, active_soldiers: dyn}) : SOLDIERS_DEFAULT;
+
+    loadAssignForSector(sectorId);
+
+    el('appTitle').textContent = MANIFEST?.app?.title || "שבצק – פיילוט v16";
+    el('appSub').textContent = `גזרה: ${s.name} · חיילים פעילים: ${activeSoldiers().length} · משימות: ${(TASKS?.tasks?.length||0)}`;
+    el('sectorDescInApp').textContent = s.description || "";
+    renderRules();
+
+    const today = isoDate(new Date());
+    el('fromDate').value = today;
+    el('toDate').value = addDays(today, 3);
+    el('viewDate').value = today;
+    LAST_CSV = "";
+    el('exportBtn').disabled = true;
+
+    refreshView();
+  }
+
+  
+  
+  // ===== Daily Report (active soldiers by date) =====
+  function activeListForDate(dateISO){
+    const soldiers = activeSoldiers().map(s=>({id:String(s.id), name:s.name, platoon:s.platoon||"", team:s.team||""}))
+      .sort((a,b)=>a.platoon.localeCompare(b.platoon) || a.team.localeCompare(b.team) || a.name.localeCompare(b.name));
+    const rows = [];
+    soldiers.forEach(s=>{
+      const st = getVacState(dateISO, s.id); // A/L/E/R
+      if(st === 'L') return; // leave => not active list
+      rows.push({...s, state:st});
+    });
+    return rows;
+  }
+
+  function renderDailyReport(dateISO){
+    const rows = activeListForDate(dateISO);
+    const labelByState = {A:"פעיל", E:"יציאה", R:"חזרה"};
+    let htmlOut = `<div class="row" style="justify-content:space-between; align-items:center">
+      <span class="pill">תאריך: <b class="mono">${dateISO}</b></span>
+      <span class="pill">סה״כ: <b>${rows.length}</b></span>
+    </div>`;
+    htmlOut += `<div class="hr"></div>`;
+    htmlOut += `<table class="mini"><thead><tr>
+      <th>חייל</th><th>מחלקה</th><th>צוות</th><th>סטטוס</th>
+    </tr></thead><tbody>`;
+    rows.forEach(r=>{
+      const st = labelByState[r.state] || "פעיל";
+      const badge = (r.state==='E') ? `<span class="badge warn">יציאה</span>` : (r.state==='R' ? `<span class="badge">חזרה</span>` : `<span class="badge auto">פעיל</span>`);
+      htmlOut += `<tr>
+        <td>${r.name} <span class="mono small">(${r.id})</span></td>
+        <td>${r.platoon||''}</td>
+        <td>${r.team||''}</td>
+        <td>${badge} ${st}</td>
+      </tr>`;
+    });
+    htmlOut += `</tbody></table>`;
+    htmlOut += `<div class="hr"></div><div><b>כמות חיילים פעילים: ${rows.length}</b></div>`;
+    el('dailyReportBox').innerHTML = htmlOut;
+  }
+
+  function exportDailyReportCSV(dateISO){
+    const rows = activeListForDate(dateISO);
+    const lines = [];
+    lines.push(["date","soldier_id","soldier_name","platoon","team","status"].join(","));
+    rows.forEach(r=>{
+      const status = (r.state==='E') ? "EXIT" : (r.state==='R' ? "RETURN" : "ACTIVE");
+      lines.push([dateISO,r.id, `"${String(r.name||'').replace(/"/g,'""')}"`, r.platoon, r.team, status].join(","));
+    });
+    lines.push(["TOTAL","","","","",String(rows.length)].join(","));
+    const blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `daily_active_${dateISO}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+
+  // ===== Roles & availability =====
+  function allRoles(){
+    return (ROLES?.roles||[]).map(r=>({id:String(r.id), name:r.name||String(r.id)}));
+  }
+  function roleName(roleId){
+    const r = (ROLES?.roles||[]).find(x=>String(x.id)===String(roleId));
+    return r?.name || String(roleId);
+  }
+  function soldierRoles(soldier){
+    const rs = soldier?.roles || soldier?.role || [];
+    if(Array.isArray(rs)) return rs.map(String);
+    return [String(rs)];
+  }
+  function expandRoleIds(arr){
+    const out = [];
+    (arr||[]).forEach(x=>{
+      const k = String(x);
+      const eq = ROLES?.equivalence_groups?.[k];
+      if(eq && Array.isArray(eq)) out.push(...eq.map(String));
+      else out.push(k);
+    });
+    return [...new Set(out)];
+  }
+  function hasAnyRole(soldier, roleIds){
+    const srs = new Set(soldierRoles(soldier));
+    for(const r of expandRoleIds(roleIds)){
+      if(srs.has(String(r))) return true;
+    }
+    return false;
+  }
+  function cutoverMin(){
+    const hhmm = (ROLES?.availability?.exit_return_cutover_hhmm) || (CONFIG?.availability?.exit_return_cutover_hhmm) || "12:00";
+    const [h,m] = hhmm.split(":").map(Number);
+    return (h*60 + m) % 1440;
+  }
+  function stateAllowsSlot(dateISO, soldierId, slotStartMin){
+    try{
+      if(typeof getVacState !== 'function') return true;
+      const st = getVacState(dateISO, soldierId);
+      if(st === 'L') return false;
+      if(st === 'A') return true;
+      const co = cutoverMin();
+      if(st === 'E') return slotStartMin < co;
+      if(st === 'R') return slotStartMin >= co;
+      return true;
+    }catch(e){ return true; }
+  }
+  function taskRoleRules(task){
+    const rr = task?.role_rules || {};
+    return {
+      required_any: rr.required_any || [],
+      preferred: rr.preferred || [],
+      forbidden: rr.forbidden || [],
+      prefer_if_available: !!rr.prefer_if_available
+    };
+  }
+
+
+// ===== Vacation calendar UI =====
+  function dateRangeInclusive(fromISO,toISO){
+    return dateRange(fromISO,toISO); // existing helper already inclusive in this project
+  }
+
+  function renderVacTable(fromISO,toISO){
+    const soldiers = activeSoldiers().map(s=>({id:String(s.id), name:s.name, platoon:s.platoon||"", team:s.team||""}))
+      .sort((a,b)=>a.platoon.localeCompare(b.platoon) || a.team.localeCompare(b.team) || a.name.localeCompare(b.name));
+    const dates = dateRangeInclusive(fromISO,toISO);
+    const vacMap = loadVacMap();
+    const minActive = Number(el('vacMinActive')?.value||0);
+    try{ localStorage.setItem(vacMinKey(), String(minActive)); }catch(e){}
+
+    // Auto-fill between Exit and Return for all soldiers (only fills ACTIVE -> LEAVE)
+    soldiers.forEach(s=> vacSeqFillBetween(dates, s.id));
+
+    const tbl = el('vacTable');
+    let thead = `<thead><tr>
+      <th class="stickyRight" style="min-width:180px">חייל</th>`;
+    dates.forEach((d,idx)=>{
+      const mmdd = d.slice(5);
+      thead += `<th class="mono" data-col="${idx}">${mmdd}</th>`;
+    });
+    thead += `<th class="stickyLeft" style="min-width:120px">סה״כ פעילות</th><th class="stickyLeft2" style="min-width:120px">סה״כ חופשה</th>`;
+    thead += `</tr></thead>`;
+
+    let tbody = `<tbody>`;
+    const activeEqPerDay = dates.map(()=>0); // ACTIVE=1, EXIT/RETURN=0.5, LEAVE=0
+
+    const labelByState = {A:"פעיל", L:"חופשה", E:"יציאה", R:"חזרה"};
+    const classByState = {A:"vacCell vacActive", L:"vacCell vacLeave", E:"vacCell vacExit", R:"vacCell vacReturn"};
+    const nextState = {A:"L", L:"E", E:"R", R:"A"};
+
+    soldiers.forEach(s=>{
+      let act=0, leave=0;
+      let row = `<tr><td class="stickyRight"><b>${s.name}</b><div class="small mono">${s.id} · מחלקה ${s.platoon||'-'} · צוות ${s.team||'-'}</div></td>`;
+      dates.forEach((d,idx)=>{
+        const st = getVacState(d, s.id);
+        if(st==="L") leave += 1;
+        if(st==="A") { act += 1; activeEqPerDay[idx] += 1; }
+        else if(st==="E" || st==="R") { act += 0.5; activeEqPerDay[idx] += 0.5; }
+
+        row += `<td class="${classByState[st]||classByState.A}" data-date="${d}" data-sid="${s.id}" data-st="${st}">${labelByState[st]||labelByState.A}</td>`;
+      });
+      row += `<td class="stickyLeft"><b>${act}</b></td><td class="stickyLeft2"><b>${leave}</b></td>`;
+      row += `</tr>`;
+      tbody += row;
+    });
+
+    // bottom summary row
+    tbody += `<tr>
+      <td class="stickyRight"><b>סה״כ פעילים ביום</b><div class="small">פעיל=1 · יציאה/חזרה=0.5</div></td>`;
+    activeEqPerDay.forEach((c,idx)=>{
+      const low = (minActive>0 && c < minActive);
+      tbody += `<td class="${low?'vacLow':''}" data-colsum="${idx}"><b>${c}</b></td>`;
+    });
+    tbody += `<td class="stickyLeft">—</td><td class="stickyLeft2">—</td></tr>`;
+    tbody += `</tbody>`;
+
+    tbl.innerHTML = thead + tbody;
+
+    // Mark low-min days in header too
+    if(minActive>0){
+      dates.forEach((d,idx)=>{
+        const c = activeEqPerDay[idx];
+        if(c < minActive){
+          const th = tbl.querySelector(`th[data-col="${idx}"]`);
+          if(th) th.classList.add('vacLow');
+        }
+      });
+    }
+
+    // click handler (cycle states)
+    tbl.querySelectorAll('td.vacCell').forEach(td=>{
+      td.addEventListener('click', ()=>{
+        const d = td.getAttribute('data-date');
+        const sid = td.getAttribute('data-sid');
+        const st = td.getAttribute('data-st') || 'A';
+        const ns = nextState[st] || 'A';
+        setVacState(d,sid,ns);
+        // Re-apply auto-fill (only A->L) after change
+        renderVacTable(fromISO,toISO);
+      });
+    });
+  }
+
+  function exportVacCSV(fromISO,toISO){
+(fromISO,toISO){
+    const soldiers = activeSoldiers().map(s=>({id:String(s.id), name:s.name}));
+    const dates = dateRangeInclusive(fromISO,toISO);
+    const vacMap = loadVacMap();
+    const lines = [];
+    lines.push(["soldier_id","soldier_name", ...dates].join(","));
+    soldiers.forEach(s=>{
+      const row = [s.id, `"${String(s.name||'').replace(/"/g,'""')}"`];
+      dates.forEach(d=>{ const st = getVacState(d, s.id); row.push(st==="A"?"ACTIVE":(st==="L"?"LEAVE":(st==="E"?"EXIT":"RETURN"))); });
+      lines.push(row.join(","));
+    });
+    const blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `vacation_calendar_${fromISO}_${toISO}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+
+// ===== Buttons =====
+
+  function requireAdmin(){
+    if(CURRENT_ROLE !== 'admin'){
+      alert('אין הרשאה: תצוגה כחייל בלבד.');
+      return false;
+    }
+    return true;
+  }
+
+  // ===== Vacation calendar (per sector) =====
+  
+  function vacMinKey(){ return `shibutz_vac_min_${SECTOR?.id||localStorage.getItem('shibutz_sector')||'unknown'}`; }
+
+  function vacKey(){ return `shibutz_vac_${SECTOR?.id||localStorage.getItem('shibutz_sector')||'unknown'}`; }
+  function loadVacMap(){
+    try{ return JSON.parse(localStorage.getItem(vacKey())||"{}") || {}; }catch(e){ return {}; }
+  }
+  function saveVacMap(map){
+    localStorage.setItem(vacKey(), JSON.stringify(map||{}));
+  }
+  function getVacState(dateISO, soldierId){
+    const m = loadVacMap();
+    return (m?.[dateISO]?.[String(soldierId)] || 'A'); // A=Active, L=Leave, E=Exit, R=Return
+  }
+  function setVacState(dateISO, soldierId, state){
+    const m = loadVacMap();
+    const d = m[dateISO] || {};
+    const key = String(soldierId);
+    if(!state || state==='A') delete d[key];
+    else d[key] = state;
+    if(Object.keys(d).length) m[dateISO]=d; else delete m[dateISO];
+    saveVacMap(m);
+  }
+  function isUnavailableByVac(dateISO, soldierId){
+    const st = getVacState(dateISO, soldierId);
+    return st !== 'A'; // treat Leave/Exit/Return as unavailable for now
+  }
+
+  function vacSeqFillBetween(dateList, soldierId){
+    // Auto-fill: between Exit and Return => Leave, unless user already set a non-active state
+    const sid = String(soldierId);
+    for(let i=0;i<dateList.length;i++){
+      const d = dateList[i];
+      if(getVacState(d,sid) !== 'E') continue;
+      // find next return
+      let j=i+1;
+      while(j<dateList.length && getVacState(dateList[j],sid) !== 'R') j++;
+      if(j>=dateList.length) continue;
+      for(let k=i+1;k<j;k++){
+        const cur = getVacState(dateList[k],sid);
+        if(cur==='A') setVacState(dateList[k],sid,'L');
+      }
+      i=j; // jump
+    }
+  }
+  function clearVacAll(){
+    localStorage.removeItem(vacKey());
+  }
+
+
+  // Commander filter buttons
+  function setCommanderFilter(mode){
+    COMMANDER_FILTER = mode;
+    try{
+      el('showAllCmdBtn').className = (mode==='all') ? 'primary' : 'ghost';
+      el('showFreeCmdBtn').className = (mode==='free') ? 'primary' : 'ghost';
+      el('showBusyCmdBtn').className = (mode==='busy') ? 'primary' : 'ghost';
+    }catch(e){}
+    const from = el('fromDate')?.value, to = el('toDate')?.value;
+    if(from && to) computeCommanderOverview(from,to);
+  }
+  el('showAllCmdBtn').addEventListener('click', ()=> setCommanderFilter('all'));
+  el('showFreeCmdBtn').addEventListener('click', ()=> setCommanderFilter('free'));
+  el('showBusyCmdBtn').addEventListener('click', ()=> setCommanderFilter('busy'));
+
+
+  el('showHashBtn').addEventListener('click', async ()=>{
+    const pwd = (el('password').value||'').trim();
+    if(!pwd){ el('hashOut').value=''; el('loginMsg').innerHTML='<span class="err">הקלד סיסמה.</span>'; return; }
+    el('hashOut').value = await sha256Hex(pwd);
+    el('loginMsg').innerHTML = '<span class="ok">נוצר hash.</span>';
+  });
+
+  el('loginBtn').addEventListener('click', async ()=>{
+    try{
+      const sectorId = el('sectorSelect').value;
+      const role = (document.querySelector('input[name="role"]:checked')?.value || 'admin');
+
+      if(role === 'soldier'){
+        const soldierId = el('soldierSelectLogin').value || '';
+        if(!soldierId){
+          el('loginMsg').innerHTML = '<span class="err">בחר את שמך מהרשימה.</span>';
+          return;
+        }
+
+        // Create session (no password for soldier)
+        setSession(true, sectorId, MANIFEST?.security?.lock_idle_minutes ?? 30);
+        setRoleSession('soldier', soldierId);
+
+        CURRENT_ROLE = 'soldier';
+        CURRENT_SOLDIER_ID = String(soldierId);
+
+        fillSectorSelect('sectorSelectInApp','sectorDescInApp'); // keep in sync (admin UI)
+        el('sectorSelectInApp').value = sectorId;
+
+        await loadSectorFiles(sectorId);
+
+        // Soldier view defaults
+        const today = isoDate(new Date());
+        el('soldierFrom').value = today;
+        el('soldierTo').value = addDays(today, 6);
+
+        setView('soldier');
+        renderSoldierTimeline(el('soldierFrom').value, el('soldierTo').value);
+        updateNextShiftUI();
+
+        el('loginMsg').textContent='';
+        return;
+      }
+
+      // Admin flow (requires password)
+      const pwd = (el('password').value||'').trim();
+      if(!pwd){ el('loginMsg').innerHTML='<span class="err">חובה להזין סיסמה.</span>'; return; }
+      const sector = (MANIFEST?.sectors||[]).find(s=>s.id===sectorId);
+      if(!sector){ el('loginMsg').innerHTML='<span class="err">גזרה לא נמצאה.</span>'; return; }
+      const entered = await sha256Hex(pwd);
+      const expected = (sector.password_hash_sha256_hex || '').toLowerCase();
+      if(!expected){ el('loginMsg').innerHTML='<span class="err">לא מוגדר hash לגזרה ב-manifest.json.</span>'; return; }
+      if(entered !== expected){ el('loginMsg').innerHTML='<span class="err">סיסמה שגויה לגזרה.</span>'; return; }
+
+      setSession(true, sectorId, MANIFEST?.security?.lock_idle_minutes ?? 30);
+      setRoleSession('admin','');
+
+      CURRENT_ROLE = 'admin';
+      CURRENT_SOLDIER_ID = '';
+
+      setView('admin');
+
+      fillSectorSelect('sectorSelectInApp','sectorDescInApp');
+      el('sectorSelectInApp').value = sectorId;
+
+      await loadSectorFiles(sectorId);
+      el('loginMsg').textContent='';
+      el('msg').innerHTML='<span class="ok">נטענה גזרה.</span>';
+    } catch(err){
+      el('loginMsg').innerHTML = `<span class="err">שגיאה:</span> ${String(err.message||err)}`;
+    }
+  });
+
+
+  el('logoutBtn').addEventListener('click', ()=>{ setSession(false); setRoleSession('admin',''); location.reload(); });
+  el('lockBtn').addEventListener('click', ()=>{ setSession(false); setRoleSession('admin',''); location.reload(); });
+
+  // Soldier view buttons
+
+  el('onlyAssignedChk').addEventListener('change', ()=>{
+    renderSoldierTimeline(el('soldierFrom').value, el('soldierTo').value);
+        updateNextShiftUI();
+  });
+  el('exportMineBtn').addEventListener('click', exportMineCSV);
+  el('printMineBtn').addEventListener('click', openPrintAndPrint);
+
+  el('soldierLogoutBtn').addEventListener('click', ()=>{ setSession(false); setRoleSession('admin',''); location.reload(); });
+  el('soldierRefreshBtn').addEventListener('click', ()=>{
+    renderSoldierTimeline(el('soldierFrom').value, el('soldierTo').value);
+        updateNextShiftUI();
+  });
+  el('range7Btn').addEventListener('click', ()=>{
+    const today = isoDate(new Date());
+    el('soldierFrom').value = today;
+    el('soldierTo').value = addDays(today, 6);
+    renderSoldierTimeline(el('soldierFrom').value, el('soldierTo').value);
+        updateNextShiftUI();
+  });
+  el('range14Btn').addEventListener('click', ()=>{
+    const today = isoDate(new Date());
+    el('soldierFrom').value = today;
+    el('soldierTo').value = addDays(today, 13);
+    renderSoldierTimeline(el('soldierFrom').value, el('soldierTo').value);
+        updateNextShiftUI();
+  });
+  el('soldierFrom').addEventListener('change', ()=>{
+    if(el('soldierFrom').value && el('soldierTo').value) renderSoldierTimeline(el('soldierFrom').value, el('soldierTo').value);
+        updateNextShiftUI();
+  });
+  el('soldierTo').addEventListener('change', ()=>{
+    if(el('soldierFrom').value && el('soldierTo').value) renderSoldierTimeline(el('soldierFrom').value, el('soldierTo').value);
+        updateNextShiftUI();
+  });
+
+
+  ['click','keydown','mousemove','touchstart'].forEach(evt=> window.addEventListener(evt, ()=>touchSession(), {passive:true}));
+  setInterval(()=>{ if(localStorage.getItem('shibutz_authed')==='1' && !isSessionValid()){ setSession(false); location.reload(); } }, 5000);
+
+  el('manualToggleBtn').addEventListener('click', ()=>{
+    if(!requireAdmin()) return;
+    MANUAL_MODE = !MANUAL_MODE;
+    el('manualToggleBtn').textContent = `מצב ידני: ${MANUAL_MODE ? 'פעיל' : 'כבוי'}`;
+    el('autoFillBtn').disabled = !MANUAL_MODE;
+    refreshView();
+  });
+
+  el('autoAllBtn').addEventListener('click', ()=>{
+    if(!requireAdmin()) return;
+    const from = el('fromDate').value, to = el('toDate').value;
+    if(!from || !to || from>to){ el('msg').innerHTML='<span class="err">טווח תאריכים לא תקין.</span>'; return; }
+    const dates = dateRange(from,to);
+    dates.forEach(d=>{
+      const slots = taskSlotsForDay(d);
+      slots.forEach(s=>{
+        const k = slotKey(d, s.task_id, s.slot);
+        if(ASSIGN[k] && ASSIGN[k].source === 'auto') delete ASSIGN[k];
+      });
+    });
+    saveAssignForSector(SECTOR.id);
+
+    const res = scheduleAutoFill(from,to,true);
+    el('msg').innerHTML = res.failures.length ? `<span class="warn">נבנה אוטומטית. חסרים: ${res.failures.length} סלוטים.</span>` : `<span class="ok">נבנה אוטומטית בהצלחה.</span>`;
+    refreshView();
+    el('exportBtn').disabled = !LAST_CSV;
+  });
+
+  el('autoFillBtn').addEventListener('click', ()=>{
+    if(!requireAdmin()) return;
+    const from = el('fromDate').value, to = el('toDate').value;
+    if(!from || !to || from>to){ el('msg').innerHTML='<span class="err">טווח תאריכים לא תקין.</span>'; return; }
+    const res = scheduleAutoFill(from,to,true);
+    el('msg').innerHTML = res.failures.length ? `<span class="warn">הושלם אוטומטית. חסרים: ${res.failures.length} סלוטים.</span>` : `<span class="ok">הושלם אוטומטית בהצלחה.</span>`;
+    refreshView();
+    el('exportBtn').disabled = !LAST_CSV;
+  });
+
+  el('resetBtn').addEventListener('click', ()=>{
+    if(!requireAdmin()) return;
+    const ok1 = confirm(`איפוס מהעכשיו בגזרה "${SECTOR.name}": זה ימחק שיבוצים עתידיים. להמשיך?`);
+    if(!ok1) return;
+    const ok2 = confirm("אישור נוסף: לבצע איפוס מהעכשיו?");
+    if(!ok2) return;
+    clearAssignmentsFromNow();
+    el('msg').innerHTML='<span class="ok">בוצע איפוס מהעכשיו בגזרה.</span>';
+    refreshView();
+  });
+
+  el('exportBtn').addEventListener('click', ()=>{
+    if(!requireAdmin()) return;
+    if(!LAST_CSV){ alert("אין מה לייצא עדיין. לחץ 'בנה אוטומטית' או 'השׁלם אוטומטית'"); return; }
+    const blob = new Blob([LAST_CSV], {type:"text/csv;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const from = el('fromDate').value || "from";
+    const to = el('toDate').value || "to";
+    a.href = url; a.download = `shibutz_${SECTOR.id}_${from}_to_${to}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  // Soldiers modal wiring
+  el('closeModalBtn').addEventListener('click', ()=>{ el('modalBack').style.display='none'; });
+  el('modalBack').addEventListener('click', (e)=>{ if(e.target.id==='modalBack') el('modalBack').style.display='none'; });
+  el('soldierSearch').addEventListener('input', ()=>renderSoldiersTable());
+
+  el('manageSoldiersBtn').addEventListener('click', ()=>{
+    if(!requireAdmin()) return;
+    el('modalBack').style.display='flex';
+    renderSoldiersTable();
+  });
+
+  el('exportSoldiersBtn').addEventListener('click', ()=>{
+    const csv = soldiersToCsv(SOLDIERS.active_soldiers||[]);
+    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href=url; a.download=`soldiers_${SECTOR.id}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  async function readChosenFile(){
+    const f = el('csvFile').files?.[0];
+    if(!f) return null;
+    return await f.text();
+  }
+
+  el('importCsvBtn').addEventListener('click', async ()=>{
+    const text = await readChosenFile();
+    if(!text){ el('soldierMsg').innerHTML='<span class="err">בחר קובץ CSV.</span>'; return; }
+    const rows = csvToSoldiers(text);
+    if(!rows.length){ el('soldierMsg').innerHTML='<span class="err">לא נמצאו רשומות תקינות.</span>'; return; }
+    setSoldiersList(rows);
+    el('soldierMsg').innerHTML = `<span class="ok">יובאו ${rows.length} חיילים (החלפה).</span>`;
+    renderSoldiersTable();
+  });
+
+  el('mergeCsvBtn').addEventListener('click', async ()=>{
+    const text = await readChosenFile();
+    if(!text){ el('soldierMsg').innerHTML='<span class="err">בחר קובץ CSV.</span>'; return; }
+    const incoming = csvToSoldiers(text);
+    if(!incoming.length){ el('soldierMsg').innerHTML='<span class="err">לא נמצאו רשומות תקינות.</span>'; return; }
+    const map = new Map((SOLDIERS.active_soldiers||[]).map(s=>[String(s.id), s]));
+    incoming.forEach(s=>map.set(String(s.id), s));
+    const merged = Array.from(map.values());
+    setSoldiersList(merged);
+    el('soldierMsg').innerHTML = `<span class="ok">יובאו ${incoming.length} (מיזוג). סה״כ: ${merged.length}.</span>`;
+    renderSoldiersTable();
+  });
+
+  el('saveSoldierBtn').addEventListener('click', ()=>{
+    const id = el('f_id').value.trim();
+    const name = el('f_name').value.trim();
+    const platoon = el('f_platoon').value.trim();
+    const team = el('f_team').value.trim();
+    const active = el('f_active').value;
+    if(!id || !name){ el('soldierMsg').innerHTML='<span class="err">חובה ID ושם.</span>'; return; }
+    const list = (SOLDIERS.active_soldiers||[]).slice();
+    const idx = list.findIndex(s=>String(s.id)===String(id));
+    const obj = {id, name, platoon, team, active};
+    if(idx>=0) list[idx]=obj; else list.push(obj);
+    setSoldiersList(list);
+    el('soldierMsg').innerHTML='<span class="ok">נשמר.</span>';
+    renderSoldiersTable();
+  });
+
+  el('clearFormBtn').addEventListener('click', ()=>{
+    ['f_id','f_name','f_platoon','f_team'].forEach(x=>el(x).value="");
+    el('f_active').value="1";
+    el('soldierMsg').innerHTML='';
+  });
+
+  el('deleteSoldierBtn').addEventListener('click', ()=>{
+    const id = el('f_id').value.trim();
+    if(!id){ el('soldierMsg').innerHTML='<span class="err">הכנס ID למחיקה.</span>'; return; }
+    const ok = confirm(`למחוק חייל ID=${id}?`);
+    if(!ok) return;
+    const list = (SOLDIERS.active_soldiers||[]).filter(s=>String(s.id)!==String(id));
+    setSoldiersList(list);
+    el('soldierMsg').innerHTML='<span class="ok">נמחק.</span>';
+    renderSoldiersTable();
+  });
+
+  el('resetSoldiersBtn').addEventListener('click', ()=>{
+    if(!requireAdmin()) return;
+    const ok1 = confirm("איפוס רשימת החיילים לברירת מחדל של הגזרה? זה יבטל את הרשימה הדינמית ששמרת.");
+    if(!ok1) return;
+    localStorage.removeItem(soldiersKey(SECTOR.id));
+    SOLDIERS = SOLDIERS_DEFAULT;
+    el('appSub').textContent = `גזרה: ${SECTOR.name} · חיילים פעילים: ${activeSoldiers().length} · משימות: ${(TASKS?.tasks?.length||0)}`;
+    renderRules();
+    renderSoldiersTable();
+    refreshView();
+    el('msg').innerHTML='<span class="ok">אופסה רשימת החיילים לברירת מחדל.</span>';
+  });
+
+  // Assign modal wiring
+  el('closeAssignBtn').addEventListener('click', closeAssignModal);
+  el('assignBack').addEventListener('click', (e)=>{ if(e.target.id==='assignBack') closeAssignModal(); });
+  el('assignSearch').addEventListener('input', renderAssignList);
+  el('clearAssignBtn').addEventListener('click', ()=>{
+    if(!ASSIGN_CTX) return;
+    const {dateISO, taskId, slot} = ASSIGN_CTX;
+    setAssigned(dateISO, taskId, slot, null, "manual");
+    closeAssignModal();
+    refreshView();
+  });
+
+  // Boot
+  (async function(){
+    try{
+      MANIFEST = await loadJson('./manifest.json');
+      document.title = MANIFEST?.app?.title || "שבצק – פיילוט v16";
+      el('loginTitle').textContent = (MANIFEST?.app?.title || "שבצק") + " – כניסה";
+      fillSectorSelect('sectorSelect','sectorDesc');
+
+      // Login role UI wiring
+      const roleRadios = Array.from(document.querySelectorAll('input[name="role"]'));
+      let cachedLoginSoldiers = [];
+      async function refreshLoginSoldiers(){
+        const sectorId = el('sectorSelect').value;
+        cachedLoginSoldiers = await loadSoldiersForLoginPreview(sectorId);
+        fillSoldierSelectLogin(cachedLoginSoldiers, el('soldierSearchLogin').value);
+      }
+      function applyRoleUI(){
+        const role = (document.querySelector('input[name="role"]:checked')?.value || 'admin');
+        const soldierBox = el('soldierPickBox');
+        if(role === 'soldier'){
+          soldierBox.classList.remove('hidden');
+          el('password').parentElement?.classList?.add?.(''); // noop
+          el('password').disabled = true;
+          el('password').value = '';
+          el('showHashBtn').disabled = true;
+          refreshLoginSoldiers();
+        } else {
+          soldierBox.classList.add('hidden');
+          el('password').disabled = false;
+          el('showHashBtn').disabled = false;
+        }
+      }
+      roleRadios.forEach(r=>r.addEventListener('change', applyRoleUI));
+      el('sectorSelect').addEventListener('change', ()=>{
+        if((document.querySelector('input[name="role"]:checked')?.value||'admin')==='soldier') refreshLoginSoldiers();
+      });
+      el('soldierSearchLogin').addEventListener('input', ()=> fillSoldierSelectLogin(cachedLoginSoldiers, el('soldierSearchLogin').value));
+      el('soldierSelectLogin').addEventListener('dblclick', ()=> el('loginBtn').click());
+      applyRoleUI();
+
+
+      if(isSessionValid()){
+        const sectorId = localStorage.getItem('shibutz_sector') || el('sectorSelect').value;
+        const rs = getRoleSession();
+        CURRENT_ROLE = rs.role || 'admin';
+        CURRENT_SOLDIER_ID = rs.soldier_id || '';
+
+        fillSectorSelect('sectorSelectInApp','sectorDescInApp');
+        el('sectorSelectInApp').value = sectorId;
+        await loadSectorFiles(sectorId);
+
+        if(CURRENT_ROLE === 'soldier'){
+          // soldier defaults
+          const today = isoDate(new Date());
+          el('soldierFrom').value = today;
+          el('soldierTo').value = addDays(today, 6);
+          setView('soldier');
+          renderSoldierTimeline(el('soldierFrom').value, el('soldierTo').value);
+        updateNextShiftUI();
+        } else {
+          setView('admin');
+          el('msg').innerHTML='<span class="ok">שוחזרה גזרה מהסשן.</span>';
+        }
+      } else {
+        setView('login');
+      }
+    } catch(err){
+      el('loginMsg').innerHTML = `<span class="err">שגיאה בטעינת manifest:</span> ${String(err.message||err)}`;
+    }
+  })();
+</script>
+</body>
+</html>
