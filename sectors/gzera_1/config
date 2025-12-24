@@ -12,5 +12,8 @@
   },
   "availability": {
     "exceptions": []
+  },
+  "security": {
+    "admin_password_hash_sha256_hex": "1234"
   }
 }
