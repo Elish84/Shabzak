@@ -1,0 +1,1005 @@
+{
+  "unit": "גזרה 2",
+  "active_soldiers": [
+    {
+      "id": "2001",
+      "name": "חייל 1",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2002",
+      "name": "חייל 2",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2003",
+      "name": "חייל 3",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2004",
+      "name": "חייל 4",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2005",
+      "name": "חייל 5",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2006",
+      "name": "חייל 6",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2007",
+      "name": "חייל 7",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2008",
+      "name": "חייל 8",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2009",
+      "name": "חייל 9",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2010",
+      "name": "חייל 10",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2011",
+      "name": "חייל 11",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2012",
+      "name": "חייל 12",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2013",
+      "name": "חייל 13",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2014",
+      "name": "חייל 14",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2015",
+      "name": "חייל 15",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2016",
+      "name": "חייל 16",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2017",
+      "name": "חייל 17",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2018",
+      "name": "חייל 18",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2019",
+      "name": "חייל 19",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2020",
+      "name": "חייל 20",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2021",
+      "name": "חייל 21",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2022",
+      "name": "חייל 22",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2023",
+      "name": "חייל 23",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2024",
+      "name": "חייל 24",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2025",
+      "name": "חייל 25",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2026",
+      "name": "חייל 26",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2027",
+      "name": "חייל 27",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2028",
+      "name": "חייל 28",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2029",
+      "name": "חייל 29",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2030",
+      "name": "חייל 30",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2031",
+      "name": "חייל 31",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2032",
+      "name": "חייל 32",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2033",
+      "name": "חייל 33",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2034",
+      "name": "חייל 34",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2035",
+      "name": "חייל 35",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2036",
+      "name": "חייל 36",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2037",
+      "name": "חייל 37",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2038",
+      "name": "חייל 38",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2039",
+      "name": "חייל 39",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2040",
+      "name": "חייל 40",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2041",
+      "name": "חייל 41",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2042",
+      "name": "חייל 42",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2043",
+      "name": "חייל 43",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2044",
+      "name": "חייל 44",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2045",
+      "name": "חייל 45",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2046",
+      "name": "חייל 46",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2047",
+      "name": "חייל 47",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2048",
+      "name": "חייל 48",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2049",
+      "name": "חייל 49",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2050",
+      "name": "חייל 50",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2051",
+      "name": "חייל 51",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2052",
+      "name": "חייל 52",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2053",
+      "name": "חייל 53",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2054",
+      "name": "חייל 54",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2055",
+      "name": "חייל 55",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2056",
+      "name": "חייל 56",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2057",
+      "name": "חייל 57",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2058",
+      "name": "חייל 58",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2059",
+      "name": "חייל 59",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2060",
+      "name": "חייל 60",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2061",
+      "name": "חייל 61",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2062",
+      "name": "חייל 62",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2063",
+      "name": "חייל 63",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2064",
+      "name": "חייל 64",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2065",
+      "name": "חייל 65",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2066",
+      "name": "חייל 66",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2067",
+      "name": "חייל 67",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2068",
+      "name": "חייל 68",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2069",
+      "name": "חייל 69",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2070",
+      "name": "חייל 70",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2071",
+      "name": "חייל 71",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2072",
+      "name": "חייל 72",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2073",
+      "name": "חייל 73",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2074",
+      "name": "חייל 74",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2075",
+      "name": "חייל 75",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2076",
+      "name": "חייל 76",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2077",
+      "name": "חייל 77",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2078",
+      "name": "חייל 78",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2079",
+      "name": "חייל 79",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2080",
+      "name": "חייל 80",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2081",
+      "name": "חייל 81",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2082",
+      "name": "חייל 82",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2083",
+      "name": "חייל 83",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2084",
+      "name": "חייל 84",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2085",
+      "name": "חייל 85",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2086",
+      "name": "חייל 86",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2087",
+      "name": "חייל 87",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2088",
+      "name": "חייל 88",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2089",
+      "name": "חייל 89",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2090",
+      "name": "חייל 90",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2091",
+      "name": "חייל 91",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2092",
+      "name": "חייל 92",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2093",
+      "name": "חייל 93",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2094",
+      "name": "חייל 94",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2095",
+      "name": "חייל 95",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2096",
+      "name": "חייל 96",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2097",
+      "name": "חייל 97",
+      "platoon": "1",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2098",
+      "name": "חייל 98",
+      "platoon": "2",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2099",
+      "name": "חייל 99",
+      "platoon": "3",
+      "team": "א",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    },
+    {
+      "id": "2100",
+      "name": "חייל 100",
+      "platoon": "4",
+      "team": "ב",
+      "active": "1",
+      "roles": [
+        "fighter"
+      ]
+    }
+  ]
+}
