@@ -1188,7 +1188,6 @@
     alertText.textContent = `${el('nextShiftLabel').textContent} (בעוד ${el('nextShiftCountdown').textContent})`;
 
     el('nextShiftLabel').textContent = res.date + " " + fmtHHMM(res.start.getHours()*60 + res.start.getMinutes());
-    const diff = res.start - new Date();
     const h = Math.max(0, Math.floor(diff/3600000));
     const m = Math.max(0, Math.floor((diff%3600000)/60000));
     el('nextShiftCountdown').textContent = `${h}ש ${m}ד`;
