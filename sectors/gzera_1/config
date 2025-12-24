@@ -1,0 +1,16 @@
+{
+  "app": {
+    "title": "שבצק – גזרה 1",
+    "day_boundary_hhmm": "06:00"
+  },
+  "constraints": {
+    "max_work_hours_per_day": 10,
+    "min_rest_hours_between_shifts": 8
+  },
+  "rules": {
+    "never_assign": []
+  },
+  "availability": {
+    "exceptions": []
+  }
+}
