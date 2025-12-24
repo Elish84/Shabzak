@@ -1723,7 +1723,6 @@
   }
 
   function exportVacCSV(fromISO,toISO){
-(fromISO,toISO){
     const soldiers = activeSoldiers().map(s=>({id:String(s.id), name:s.name}));
     const dates = dateRangeInclusive(fromISO,toISO);
     const vacMap = loadVacMap();
