@@ -12,25 +12,25 @@
       "id": "gzera_1",
       "name": "גזרה 1",
       "description": "דוגמה – גזרה 1 (סיסמה נפרדת).",
-      "base_path": "./sectors/gzera_1",
+      "base_path": "./sectors/gzera_1"
     },
     {
       "id": "gzera_2",
       "name": "גזרה 2",
       "description": "דוגמה – גזרה 2 (סיסמה נפרדת).",
-      "base_path": "./sectors/gzera_2",
+      "base_path": "./sectors/gzera_2"
     },
     {
       "id": "gzera_3",
       "name": "גזרה 3",
       "description": "דוגמה – גזרה 3 (סיסמה נפרדת).",
-      "base_path": "./sectors/gzera_3",
+      "base_path": "./sectors/gzera_3"
     },
     {
       "id": "gzera_4",
       "name": "גזרה 4",
       "description": "דוגמה – גזרה 4 (סיסמה נפרדת).",
-      "base_path": "./sectors/gzera_4",
+      "base_path": "./sectors/gzera_4"
     }
   ]
 }
