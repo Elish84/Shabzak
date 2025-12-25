@@ -1,12 +1,12 @@
 {
   "tasks": [
     {
-      "id": "guard_day",
+      "id": "Sior",
       "name": "שמירה – יום",
       "mode": "SHIFT",
       "window": {
-        "start": "08:00",
-        "end": "16:00"
+        "start": "06:00",
+        "end": "06:00"
       },
       "people": 1,
       "organic": true,
