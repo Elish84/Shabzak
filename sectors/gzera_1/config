@@ -13,9 +13,7 @@
   "availability": {
     "exceptions": []
   },
-{
   "security": {
     "admin_password": "1234"
   }
-}
 }
