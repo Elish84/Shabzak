@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "roles": [
+    { "id": "CMD", "label": "מפקד" },
+    { "id": "DRV", "label": "נהג" },
+    { "id": "OP",  "label": "מפעיל" },
+    { "id": "OBS", "label": "תצפיתן" },
+    { "id": "SEC", "label": "אבטחה" }
+  ]
+}
